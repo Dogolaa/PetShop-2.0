@@ -150,6 +150,7 @@ const Produtos = () => {
     EditedProduct.preco = NewProdutoPreco;
 
     EditedProduct.estoque = NewProdutoEstoque;
+    
 
     const response = await Api.put(
       "/EditarProduto",

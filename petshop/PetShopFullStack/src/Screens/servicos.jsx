@@ -27,8 +27,6 @@ const Servicos = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
 
-
-
   const [showModal, setShowModal] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
 
@@ -36,8 +34,8 @@ const Servicos = () => {
 
   const [NewServiceName, setNewServiceName] = useState("");
   const [NewServicePreco, setNewServicePreco] = useState("");
+  const [newServiceDuracao, setNewServiceDuracao] = useState('');
   const [Editdata, setEditData] = useState([]);
-
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -46,8 +44,6 @@ const Servicos = () => {
     );
     setServicos(filteredServicos);
   };
-
-
 
   const handleModal = () => {
     setShowModal(true);
@@ -61,7 +57,7 @@ const Servicos = () => {
     setShowModal(false);
     setNewServiceName("");
     setNewServicePreco("");
-    
+    setNewServiceDuracao("");
   };
 
   const handleCloseEdit = () => {
@@ -104,6 +100,7 @@ const Servicos = () => {
     const newService = {
       nome: NewServiceName,
       preco: NewServicePreco,
+      duracao: newServiceDuracao
     };
 
     const response = await Api.post(
@@ -122,6 +119,7 @@ const Servicos = () => {
         id: response.data.insertId,
         nome: NewServiceName,
         preco: NewServicePreco,
+        duracao: newServiceDuracao
       },
     ]);
 
@@ -129,6 +127,7 @@ const Servicos = () => {
 
     setNewServiceName("");
     setNewServicePreco("");
+    setNewServiceDuracao("");
   };
 
   const handleEdit = async (e) => {
@@ -145,20 +144,17 @@ const Servicos = () => {
     const EditedService = {};
     EditedService.id = Editdata.id;
 
-   
-      EditedService.nome = NewServiceName;
-    
+    EditedService.nome = NewServiceName;
 
-   
-      EditedService.preco = NewServicePreco;
-  
-    
+    EditedService.preco = NewServicePreco;
+
+    EditedService.duracao = newServiceDuracao;
 
     const response = await Api.put(
-     "/EditarServico",
-     JSON.stringify(EditedService),
-     {
-       headers: { "Content-Type": "application/json" },
+      "/EditarServico",
+      JSON.stringify(EditedService),
+      {
+        headers: { "Content-Type": "application/json" },
       }
     );
 
@@ -169,6 +165,7 @@ const Servicos = () => {
             ...servico,
             nome: NewServiceName,
             preco: NewServicePreco,
+            duracao: newServiceDuracao
           };
         }
         return servico;
@@ -179,6 +176,7 @@ const Servicos = () => {
 
     setNewServiceName("");
     setNewServicePreco("");
+    setNewServiceDuracao("");
   };
 
   return (
@@ -241,6 +239,14 @@ const Servicos = () => {
               />
             </Form.Group>
 
+            <Form.Group controlId="formBasicDuracao">
+              <Form.Label>Duração do Serviço</Form.Label>
+              <Form.Control
+                type="time" 
+                placeholder="Digite a Duração do Serviço"
+                onChange={(e) => setNewServiceDuracao(e.target.value)}
+              />
+            </Form.Group>
 
             <Button variant="primary" type="submit">
               Salvar
@@ -273,6 +279,16 @@ const Servicos = () => {
               />
             </Form.Group>
 
+            <Form.Group controlId="formBasicDuracao">
+              <Form.Label>Duração do Serviço</Form.Label>
+              <Form.Control
+                type="time" 
+                placeholder="Digite a Duração do Serviço"
+                onChange={(e) => setNewServiceDuracao(e.target.value)}
+                defaultValue={Editdata.duracao}
+              />
+            </Form.Group>
+
             <Button variant="primary" type="submit">
               Salvar
             </Button>
@@ -286,6 +302,7 @@ const Servicos = () => {
             <th>#</th>
             <th>Nome</th>
             <th>Preco</th>
+            <th>Duracao</th>
             <th>Acoes</th>
           </tr>
         </thead>
@@ -295,13 +312,14 @@ const Servicos = () => {
               <td>{service.id}</td>
               <td>{service.nome}</td>
               <td>{service.preco}</td>
-              
+              <td>{service.duracao}</td>
 
               <td>
                 <Button
                   onClick={() => {
                     handleDeleteService(service.id);
-                  }}style={{marginRight: 10}}
+                  }}
+                  style={{ marginRight: 10 }}
                 >
                   <BsTrash />
                 </Button>
@@ -311,8 +329,7 @@ const Servicos = () => {
                       handleEditService(service.id),
                       setNewServiceName(service.nome),
                       setNewServicePreco(service.preco);
-                      
-                      
+                      setNewServiceDuracao(service.duracao);
                   }}
                 >
                   <AiOutlineEdit />

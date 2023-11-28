@@ -7,6 +7,7 @@ import {
   Table,
   ModalBody,
   FormGroup,
+  Col,
 } from "react-bootstrap";
 import Api from "../Api.jsx";
 import { BsTrash } from "react-icons/bs";
@@ -35,6 +36,8 @@ const Clientes = () => {
 
   const [newClientesName, setNewClienteName] = useState("");
   const [newClientesEmail, setNewClienteEmail] = useState("");
+  const [newClientesTelefone, setNewClienteTelefone] = useState("");
+  const [newClientesEndereco, setNewClienteEndereco] = useState("");
   const [Editdata, setEditData] = useState([]);
 
   const handleSearch = (e) => {
@@ -57,6 +60,8 @@ const Clientes = () => {
     setShowModal(false);
     setNewClienteName("");
     setNewClienteEmail("");
+    setNewClienteTelefone("");
+    setNewClienteEndereco("");
   };
 
   const handleCloseEdit = () => {
@@ -99,6 +104,8 @@ const Clientes = () => {
     const newCliente = {
       nome: newClientesName,
       email: newClientesEmail,
+      telefone: newClientesTelefone,
+      endereco: newClientesEndereco,
     };
 
     const response = await Api.post(
@@ -117,6 +124,8 @@ const Clientes = () => {
         id: response.data.insertId,
         nome: newClientesName,
         email: newClientesEmail,
+        telefone: newClientesTelefone,
+        endereco: newClientesEndereco,
       },
     ]);
 
@@ -124,6 +133,8 @@ const Clientes = () => {
 
     setNewClienteEmail("");
     setNewClienteName("");
+    setNewClienteTelefone("");
+    setNewClienteEndereco("");
   };
 
   const handleEdit = async (e) => {
@@ -144,6 +155,10 @@ const Clientes = () => {
 
     EditedClient.email = newClientesEmail;
 
+    EditedClient.telefone = newClientesTelefone;
+
+    EditedClient.endereco = newClientesEndereco;
+
     const response = await Api.put(
       "/EditarCliente",
       JSON.stringify(EditedClient),
@@ -159,6 +174,8 @@ const Clientes = () => {
             ...cliente,
             nome: newClientesName,
             email: newClientesEmail,
+            telefone: newClientesTelefone,
+            endereco: newClientesEndereco,
           };
         }
         return cliente;
@@ -169,6 +186,8 @@ const Clientes = () => {
 
     setNewClienteName("");
     setNewClienteEmail("");
+    setNewClienteEndereco("");
+    setNewClienteTelefone("");
   };
 
   return (
@@ -207,7 +226,6 @@ const Clientes = () => {
         </Form>
       </div>
 
-      
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Cadastro de novo Cliente</Modal.Title>
@@ -231,6 +249,25 @@ const Clientes = () => {
                 onChange={(e) => setNewClienteEmail(e.target.value)}
               />
             </FormGroup>
+
+            <FormGroup controlId="formBasicPhone">
+              <Form.Label>Telefone</Form.Label>
+              <Form.Control
+                type="tel"
+                placeholder="Digite o telefone do Cliente"
+                onChange={(e) => setNewClienteTelefone(e.target.value)}
+              />
+            </FormGroup>
+
+            <FormGroup controlId="formBasicAddress">
+              <Form.Label>Endereço</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Digite o endereço do Cliente"
+                onChange={(e) => setNewClienteEndereco(e.target.value)}
+              />
+            </FormGroup>
+
             <Button variant="primary" type="submit">
               Salvar
             </Button>
@@ -261,6 +298,27 @@ const Clientes = () => {
               />
             </Form.Group>
 
+
+            <FormGroup controlId="formBasicPhone">
+              <Form.Label>Telefone</Form.Label>
+              <Form.Control
+                type="tel"
+                placeholder="Digite o telefone do Cliente"
+                onChange={(e) => setNewClienteTelefone(e.target.value)}
+                defaultValue={Editdata.telefone}
+              />
+            </FormGroup>
+
+            <FormGroup controlId="formBasicAddress">
+              <Form.Label>Endereço</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Digite o endereço do Cliente"
+                onChange={(e) => setNewClienteEndereco(e.target.value)}
+                defaultValue={Editdata.endereco}
+              />
+            </FormGroup>
+
             <Button variant="primary" type="submit">
               Salvar
             </Button>
@@ -274,6 +332,8 @@ const Clientes = () => {
             <th>#</th>
             <th>Nome</th>
             <th>Email</th>
+            <th>Telefone</th>
+            <th>Endereço</th>
             <th>Acoes</th>
           </tr>
         </thead>
@@ -283,6 +343,8 @@ const Clientes = () => {
               <td>{client.id}</td>
               <td>{client.nome}</td>
               <td>{client.email}</td>
+              <td>{client.telefone}</td>
+              <td>{client.endereco}</td>
               <td>
                 <Button
                   onClick={() => {

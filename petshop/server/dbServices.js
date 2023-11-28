@@ -43,12 +43,14 @@ class dbServices {
 
   async NovoCliente(data) {
     try {
-      const query = "INSERT INTO tbl_clientes (nome,email) VALUES (?,?)";
+      const query = "INSERT INTO tbl_clientes (nome,email,telefone,endereco) VALUES (?,?,?,?)";
       const nome = data.nome;
       const email = data.email;
+      const telefone = data.telefone;
+      const endereco = data.endereco;
 
       const response = await new Promise((resolve, reject) => {
-        connection.query(query, [nome, email], (err, result) => {
+        connection.query(query, [nome, email, telefone, endereco], (err, result) => {
           if (err) reject(new Error(err.message));
           resolve(result);
         });
@@ -151,12 +153,13 @@ class dbServices {
 
   async NovoServico(data) {
     try {
-      const query = "INSERT INTO tbl_servicos (nome,preco) VALUES (?,?)";
+      const query = "INSERT INTO tbl_servicos (nome,preco,duracao) VALUES (?,?,?)";
       const nome = data.nome;
       const preco = data.preco;
+      const duracao = data.duracao;
 
       const response = await new Promise((resolve, reject) => {
-        connection.query(query, [nome, preco], (err, result) => {
+        connection.query(query, [nome, preco, duracao], (err, result) => {
           if (err) reject(new Error(err.message));
           resolve(result);
         });
@@ -252,7 +255,24 @@ class dbServices {
       }
       query += `email = ?`;
       values.push(data.email);
+      isFirstSet = false;
     }
+    if (data.telefone != null || data.telefone != undefined) {
+      if (!isFirstSet) {
+        query += ",";
+      }
+      query += `telefone = ?`;
+      values.push(data.telefone);
+      isFirstSet = false;
+    }
+    if (data.endereco != null || data.endereco != undefined) {
+      if (!isFirstSet) {
+        query += ",";
+      }
+      query += `endereco = ?`;
+      values.push(data.endereco);
+    }
+  
 
     query += ` WHERE id = ?`;
     values.push(data.id);
@@ -291,6 +311,15 @@ class dbServices {
       }
       query += `preco = ?`;
       values.push(data.preco);
+      isFirstSet = false;
+    }
+
+    if (data.duracao != null || data.duracao != undefined) {
+      if (!isFirstSet) {
+        query += ",";
+      }
+      query += `duracao = ?`;
+      values.push(data.duracao);
     }
 
     query += ` WHERE id = ?`;
