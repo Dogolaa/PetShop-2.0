@@ -18,9 +18,16 @@ const Servicos = () => {
     const getServicos = async () => {
       const responseServicos = await Api.get("/buscarServicos");
       setServicos(responseServicos.data);
+      setAllServicos(responseServicos.data);
     };
     getServicos();
   }, []);
+
+  const [allServicos, setAllServicos] = useState([]);
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+
 
   const [showModal, setShowModal] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
@@ -30,6 +37,17 @@ const Servicos = () => {
   const [NewServiceName, setNewServiceName] = useState("");
   const [NewServicePreco, setNewServicePreco] = useState("");
   const [Editdata, setEditData] = useState([]);
+
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    const filteredServicos = allServicos.filter((servico) =>
+      servico.nome.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setServicos(filteredServicos);
+  };
+
+
 
   const handleModal = () => {
     setShowModal(true);
@@ -168,9 +186,37 @@ const Servicos = () => {
       <Header />
       <h1>Lista de Servicos</h1>
 
-      <Button variant="primary" onClick={handleModal}>
-        Cadastrar novo servico
-      </Button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Button
+          variant="primary"
+          onClick={handleModal}
+          style={{ marginRight: "10px" }}
+        >
+          Cadastrar novo servico
+        </Button>
+        <Form>
+          <Form.Group controlId="formBasicSearch">
+            <Form.Control
+              type="text"
+              placeholder="Pesquisar Servico"
+              value={searchTerm}
+              onChange={(e) => {
+                handleSearch(e);
+                if (e.target.value === "") {
+                  setServicos(allServicos);
+                }
+              }}
+            />
+          </Form.Group>
+        </Form>
+      </div>
+
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Cadastro de novo Servico</Modal.Title>

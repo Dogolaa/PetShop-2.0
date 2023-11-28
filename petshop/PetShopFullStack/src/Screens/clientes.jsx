@@ -18,9 +18,14 @@ const Clientes = () => {
     const getClientes = async () => {
       const responseClientes = await Api.get("/buscarClientes");
       setClientes(responseClientes.data);
+      setAllClientes(responseClientes.data);
     };
     getClientes();
   }, []);
+
+  const [allClientes, setAllClientes] = useState([]);
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [showModal, setShowModal] = useState(false);
 
@@ -31,6 +36,14 @@ const Clientes = () => {
   const [newClientesName, setNewClienteName] = useState("");
   const [newClientesEmail, setNewClienteEmail] = useState("");
   const [Editdata, setEditData] = useState([]);
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    const filteredClientes = allClientes.filter((cliente) =>
+      cliente.nome.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setClientes(filteredClientes);
+  };
 
   const handleModal = () => {
     setShowModal(true);
@@ -72,11 +85,6 @@ const Clientes = () => {
     console.log("Editando cliente: ", Editdata);
   };
 
-
-
-
-
-
   const handleSave = async (e) => {
     e.preventDefault();
 
@@ -93,20 +101,30 @@ const Clientes = () => {
       email: newClientesEmail,
     };
 
-   const response = await Api.post("/NovoCliente", JSON.stringify(newCliente), {
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await Api.post(
+      "/NovoCliente",
+      JSON.stringify(newCliente),
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
-    console.log(response.data.insertId)
-    
-    setClientes([...clientes, {id: response.data.insertId ,nome : newClientesName,email: newClientesEmail }]);
+    console.log(response.data.insertId);
+
+    setClientes([
+      ...clientes,
+      {
+        id: response.data.insertId,
+        nome: newClientesName,
+        email: newClientesEmail,
+      },
+    ]);
 
     handleClose();
 
     setNewClienteEmail("");
     setNewClienteName("");
   };
-
 
   const handleEdit = async (e) => {
     e.preventDefault();
@@ -122,22 +140,15 @@ const Clientes = () => {
     const EditedClient = {};
     EditedClient.id = Editdata.id;
 
-   
-      EditedClient.nome = newClientesName;
-    
+    EditedClient.nome = newClientesName;
 
-   
-      EditedClient.email = newClientesEmail;
-    
-
-  
-    
+    EditedClient.email = newClientesEmail;
 
     const response = await Api.put(
-     "/EditarCliente",
-     JSON.stringify(EditedClient),
-     {
-       headers: { "Content-Type": "application/json" },
+      "/EditarCliente",
+      JSON.stringify(EditedClient),
+      {
+        headers: { "Content-Type": "application/json" },
       }
     );
 
@@ -148,7 +159,6 @@ const Clientes = () => {
             ...cliente,
             nome: newClientesName,
             email: newClientesEmail,
-
           };
         }
         return cliente;
@@ -161,21 +171,43 @@ const Clientes = () => {
     setNewClienteEmail("");
   };
 
-
-
-
-
-
-
-
   return (
-    <Container style ={{marginTop: 20}}>
+    <Container style={{ marginTop: 20 }}>
       <Header />
       <h1>Lista de Clientes</h1>
 
-      <Button variant="primary" onClick={handleModal}>
-        Cadastrar novo cliente
-      </Button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Button
+          variant="primary"
+          onClick={handleModal}
+          style={{ marginRight: "10px" }}
+        >
+          Cadastrar novo cliente
+        </Button>
+        <Form>
+          <Form.Group controlId="formBasicSearch">
+            <Form.Control
+              type="text"
+              placeholder="Pesquisar Cliente"
+              value={searchTerm}
+              onChange={(e) => {
+                handleSearch(e);
+                if (e.target.value === "") {
+                  setClientes(allClientes);
+                }
+              }}
+            />
+          </Form.Group>
+        </Form>
+      </div>
+
+      
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Cadastro de novo Cliente</Modal.Title>
@@ -229,7 +261,6 @@ const Clientes = () => {
               />
             </Form.Group>
 
-
             <Button variant="primary" type="submit">
               Salvar
             </Button>
@@ -256,7 +287,8 @@ const Clientes = () => {
                 <Button
                   onClick={() => {
                     handleDeleteClient(client.id);
-                  }}style={{marginRight: 10}}
+                  }}
+                  style={{ marginRight: 10 }}
                 >
                   <BsTrash />
                 </Button>
@@ -266,7 +298,6 @@ const Clientes = () => {
                       handleEditClient(client.id),
                       setNewClienteName(client.nome),
                       setNewClienteEmail(client.email);
-                      
                   }}
                 >
                   <AiOutlineEdit />

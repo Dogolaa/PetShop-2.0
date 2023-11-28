@@ -18,9 +18,14 @@ const Produtos = () => {
     const getProdutos = async () => {
       const responseProdutos = await Api.get("/buscarProdutos");
       setProdutos(responseProdutos.data);
+      setAllProdutos(responseProdutos.data);
     };
     getProdutos();
   }, []);
+
+  const [allProdutos, setAllProdutos] = useState([]);
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [showModal, setShowModal] = useState(false);
 
@@ -32,6 +37,14 @@ const Produtos = () => {
   const [NewProdutoPreco, setNewProdutoPreco] = useState("");
   const [NewProdutoEstoque, setNewProdutoEstoque] = useState("");
   const [Editdata, setEditData] = useState([]);
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    const filteredProdutos = allProdutos.filter((produto) =>
+      produto.nome.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setProdutos(filteredProdutos);
+  };
 
   const handleModal = () => {
     setShowModal(true);
@@ -132,23 +145,17 @@ const Produtos = () => {
     const EditedProduct = {};
     EditedProduct.id = Editdata.id;
 
-   
-      EditedProduct.nome = NewProdutoName;
-    
+    EditedProduct.nome = NewProdutoName;
 
-   
-      EditedProduct.preco = NewProdutoPreco;
-    
+    EditedProduct.preco = NewProdutoPreco;
 
-    
-      EditedProduct.estoque = NewProdutoEstoque;
-    
+    EditedProduct.estoque = NewProdutoEstoque;
 
     const response = await Api.put(
-     "/EditarProduto",
-     JSON.stringify(EditedProduct),
-     {
-       headers: { "Content-Type": "application/json" },
+      "/EditarProduto",
+      JSON.stringify(EditedProduct),
+      {
+        headers: { "Content-Type": "application/json" },
       }
     );
 
@@ -178,9 +185,36 @@ const Produtos = () => {
       <Header />
       <h1>Lista de Produtos</h1>
 
-      <Button variant="primary" onClick={handleModal}>
-        Cadastrar novo produto
-      </Button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Button
+          variant="primary"
+          onClick={handleModal}
+          style={{ marginRight: "10px" }}
+        >
+          Cadastrar Novo Produto
+        </Button>
+        <Form>
+          <Form.Group controlId="formBasicSearch">
+            <Form.Control
+              type="text"
+              placeholder="Pesquisar Produto"
+              value={searchTerm}
+              onChange={(e) => {
+                handleSearch(e);
+                if (e.target.value === "") {
+                  setClientes(allClientes);
+                }
+              }}
+            />
+          </Form.Group>
+        </Form>
+      </div>
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Cadastro de novo Produto</Modal.Title>
@@ -283,7 +317,8 @@ const Produtos = () => {
                 <Button
                   onClick={() => {
                     handleDeleteProduct(product.id);
-                  }} style={{marginRight: 10}}
+                  }}
+                  style={{ marginRight: 10 }}
                 >
                   <BsTrash />
                 </Button>
@@ -294,7 +329,6 @@ const Produtos = () => {
                       setNewProdutoName(product.nome),
                       setNewProdutoPreco(product.preco),
                       setNewProdutoEstoque(product.estoque);
-                      
                   }}
                 >
                   <AiOutlineEdit />

@@ -11,7 +11,6 @@ import {
 import Api from "../Api.jsx";
 import { BsTrash } from "react-icons/bs";
 import Header from "../Components/header.jsx";
-import { AiOutlineEdit } from "react-icons/ai";
 import Select from "react-select";
 
 const Vendas = () => {
@@ -218,7 +217,6 @@ const Vendas = () => {
     <Container style={{ marginTop: 20 }}>
       <Header />
       <h1>Lista de Vendas</h1>
-
       <Button variant="primary" onClick={handleModal}>
         Cadastrar novo venda
       </Button>
@@ -342,16 +340,6 @@ const Vendas = () => {
                   style={{ marginRight: 10 }}
                 >
                   <BsTrash />
-                </Button>
-                <Button
-                  onClick={() => {
-                    setEditData(venda),
-                      handleEditClient(venda.id),
-                      setNewClienteName(venda.nome),
-                      setNewClienteEmail(venda.email);
-                  }}
-                >
-                  <AiOutlineEdit />
                 </Button>
               </td>
             </tr>
