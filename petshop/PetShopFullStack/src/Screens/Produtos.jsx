@@ -98,6 +98,14 @@ const Produtos = () => {
       alert("nome nao pode ser nulo!");
       return;
     }
+    if (
+      NewProdutoPreco == null ||
+      NewProdutoPreco == undefined ||
+      NewProdutoPreco == ""
+    ) {
+      alert("preco nao pode ser nulo!");
+      return;
+    }
     const newProduct = {
       nome: NewProdutoName,
       preco: NewProdutoPreco,
@@ -140,6 +148,15 @@ const Produtos = () => {
       NewProdutoName == ""
     ) {
       alert("nome nao pode ser nulo!");
+      return;
+    }
+
+    if (
+      NewProdutoPreco == null ||
+      NewProdutoPreco == undefined ||
+      NewProdutoPreco == ""
+    ) {
+      alert("preco nao pode ser nulo!");
       return;
     }
     const EditedProduct = {};

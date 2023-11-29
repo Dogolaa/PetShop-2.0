@@ -148,6 +148,9 @@ const Clientes = () => {
       alert("nome nao pode ser nulo!");
       return;
     }
+
+    
+
     const EditedClient = {};
     EditedClient.id = Editdata.id;
 

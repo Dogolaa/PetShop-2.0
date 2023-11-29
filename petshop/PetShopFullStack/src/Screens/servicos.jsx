@@ -97,6 +97,14 @@ const Servicos = () => {
       alert("nome nao pode ser nulo!");
       return;
     }
+    if (
+      NewServicePreco == null ||
+      NewServicePreco == undefined ||
+      NewServicePreco == ""
+    ) {
+      alert("preco nao pode ser nulo!");
+      return;
+    }
     const newService = {
       nome: NewServiceName,
       preco: NewServicePreco,
@@ -139,6 +147,14 @@ const Servicos = () => {
       NewServiceName == ""
     ) {
       alert("nome nao pode ser nulo!");
+      return;
+    }
+    if (
+      NewServicePreco == null ||
+      NewServicePreco == undefined ||
+      NewServicePreco == ""
+    ) {
+      alert("preco nao pode ser nulo!");
       return;
     }
     const EditedService = {};

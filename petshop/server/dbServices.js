@@ -429,9 +429,10 @@ class dbServices {
 
         const queryProdutosVendidos = "SELECT id_produto FROM tbl_vendas;";
         const idsProdutos = await this.queryAsync(queryProdutosVendidos);
-
+        
         const queryServicosVendidos = "SELECT id_servico FROM tbl_vendas;";
         const idsServicos = await this.queryAsync(queryServicosVendidos);
+        
 
         const calcularFaturamentoProdutos = (ids, lista) => {
           let totalFaturamento = 0;
