@@ -363,6 +363,8 @@ const Clientes = () => {
                       handleEditClient(client.id),
                       setNewClienteName(client.nome),
                       setNewClienteEmail(client.email);
+                      setNewClienteTelefone(client.telefone);
+                      setNewClienteEndereco(client.endereco);
                   }}
                 >
                   <AiOutlineEdit />
