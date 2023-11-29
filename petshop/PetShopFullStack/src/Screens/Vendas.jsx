@@ -106,32 +106,34 @@ const Vendas = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-
-    const IDsProdutos = produtosSelecionados.map((item) => item.value);
-    const IDsServicos = servicosSelecionados.map((item) => item.value);
-
+  
+    const IDsProdutos = produtosSelecionados ? produtosSelecionados.map((item) => item.value) : [];
+    const IDsServicos = servicosSelecionados ? servicosSelecionados.map((item) => item.value) : [];
+  
     if (
       clienteSelecionado == null ||
       clienteSelecionado == undefined ||
       clienteSelecionado == ""
     ) {
-      alert("nome nao pode ser nulo!");
+      alert("Cliente não pode ser nulo!");
       return;
     }
+  
     const newVenda = {
       cliente: clienteSelecionado.value,
       produtos: IDsProdutos,
       servicos: IDsServicos,
     };
-
+  
     const response = await Api.post("/NovaVenda", JSON.stringify(newVenda), {
       headers: { "Content-Type": "application/json" },
     });
-
+  
     if (response.status === 200) {
       window.location.reload();
     }
   };
+  
 
   const handleEdit = async (e) => {
     e.preventDefault();
