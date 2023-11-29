@@ -15,18 +15,21 @@ import Header from "../Components/header.jsx";
 import { AiOutlineEdit } from "react-icons/ai";
 
 const Clientes = () => {
+  const [criterio, setCriterio] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => {
     const getClientes = async () => {
-      const responseClientes = await Api.get("/buscarClientes");
+      const responseClientes = await Api.get(
+        `/BuscarClientes?criterio=${criterio}&termo=${searchTerm}`
+      );
       setClientes(responseClientes.data);
       setAllClientes(responseClientes.data);
     };
     getClientes();
-  }, []);
+  }, [criterio, searchTerm]);
 
   const [allClientes, setAllClientes] = useState([]);
-
-  const [searchTerm, setSearchTerm] = useState("");
 
   const [showModal, setShowModal] = useState(false);
 
@@ -41,11 +44,27 @@ const Clientes = () => {
   const [Editdata, setEditData] = useState([]);
 
   const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
+    const searchTerm = e.target.value.toLowerCase();
+    setSearchTerm(searchTerm);
     const filteredClientes = allClientes.filter((cliente) =>
-      cliente.nome.toLowerCase().includes(e.target.value.toLowerCase())
+      cliente.nome.toLowerCase().includes(searchTerm)
     );
     setClientes(filteredClientes);
+  };
+
+  const handleSort = async (e) => {
+    const selectedCriterio = e.target.value;
+    setCriterio(selectedCriterio);
+
+    try {
+      const responseClientes = await Api.get(
+        `/BuscarClientes?criterio=${selectedCriterio}`
+      );
+      setClientes(responseClientes.data);
+      setAllClientes(responseClientes.data);
+    } catch (error) {
+      console.error("Error sorting products:", error);
+    }
   };
 
   const handleModal = () => {
@@ -149,8 +168,6 @@ const Clientes = () => {
       return;
     }
 
-    
-
     const EditedClient = {};
     EditedClient.id = Editdata.id;
 
@@ -210,19 +227,28 @@ const Clientes = () => {
           onClick={handleModal}
           style={{ marginRight: "10px" }}
         >
-          Cadastrar novo cliente
+          Cadastrar Novo Produto
         </Button>
+        <Form>
+          <Form.Group controlId="formBasicSort" style={{ marginRight: 10 }} >
+            <Form.Control as="select" value={criterio} onChange={handleSort}>
+              <option value="">Sem Ordenação</option>
+              <option value="nome">Nome</option>
+              <option value="telefone">Telefone</option>
+              <option value="endereco">Endereco</option>
+              {/* Adicione mais opções conforme necessário */}
+            </Form.Control>
+          </Form.Group>
+        </Form>
         <Form>
           <Form.Group controlId="formBasicSearch">
             <Form.Control
               type="text"
-              placeholder="Pesquisar Cliente"
+              placeholder="Pesquisar por nome"
               value={searchTerm}
               onChange={(e) => {
+                setSearchTerm(e.target.value);
                 handleSearch(e);
-                if (e.target.value === "") {
-                  setClientes(allClientes);
-                }
               }}
             />
           </Form.Group>
@@ -301,7 +327,6 @@ const Clientes = () => {
               />
             </Form.Group>
 
-
             <FormGroup controlId="formBasicPhone">
               <Form.Label>Telefone</Form.Label>
               <Form.Control
@@ -348,6 +373,7 @@ const Clientes = () => {
               <td>{client.email}</td>
               <td>{client.telefone}</td>
               <td>{client.endereco}</td>
+
               <td>
                 <Button
                   onClick={() => {
@@ -359,12 +385,12 @@ const Clientes = () => {
                 </Button>
                 <Button
                   onClick={() => {
-                    setEditData(client),
-                      handleEditClient(client.id),
-                      setNewClienteName(client.nome),
-                      setNewClienteEmail(client.email);
-                      setNewClienteTelefone(client.telefone);
-                      setNewClienteEndereco(client.endereco);
+                    setEditData(client);
+                    handleEditClient(client.id);
+                    setNewClienteName(client.nome);
+                    setNewClienteEmail(client.email);
+                    setNewClienteTelefone(client.telefone);
+                    setNewClienteEndereco(client.endereco);
                   }}
                 >
                   <AiOutlineEdit />
@@ -372,6 +398,13 @@ const Clientes = () => {
               </td>
             </tr>
           ))}
+          {clientes.length === 0 && (
+            <tr>
+              <td colSpan="5" style={{ textAlign: "center" }}>
+                Nenhum cliente encontrado.
+              </td>
+            </tr>
+          )}
         </tbody>
       </Table>
     </Container>

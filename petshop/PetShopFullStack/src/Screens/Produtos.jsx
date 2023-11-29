@@ -14,18 +14,23 @@ import Header from "../Components/header.jsx";
 import { AiOutlineEdit } from "react-icons/ai";
 
 const Produtos = () => {
+  const [criterio, setCriterio] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => {
     const getProdutos = async () => {
-      const responseProdutos = await Api.get("/buscarProdutos");
+      const responseProdutos = await Api.get(
+        `/BuscarProdutos?criterio=${criterio}&termo=${searchTerm}`
+      );
       setProdutos(responseProdutos.data);
       setAllProdutos(responseProdutos.data);
     };
     getProdutos();
-  }, []);
+  }, [criterio, searchTerm]);
 
   const [allProdutos, setAllProdutos] = useState([]);
 
-  const [searchTerm, setSearchTerm] = useState("");
+
 
   const [showModal, setShowModal] = useState(false);
 
@@ -39,11 +44,28 @@ const Produtos = () => {
   const [Editdata, setEditData] = useState([]);
 
   const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
+    const searchTerm = e.target.value.toLowerCase();
+    setSearchTerm(searchTerm);
     const filteredProdutos = allProdutos.filter((produto) =>
-      produto.nome.toLowerCase().includes(e.target.value.toLowerCase())
+      produto.nome.toLowerCase().includes(searchTerm)
     );
     setProdutos(filteredProdutos);
+  };
+  
+
+  const handleSort = async (e) => {
+    const selectedCriterio = e.target.value;
+    setCriterio(selectedCriterio);
+
+    try {
+      const responseProdutos = await Api.get(
+        `/BuscarProdutos?criterio=${selectedCriterio}`
+      );
+      setProdutos(responseProdutos.data);
+      setAllProdutos(responseProdutos.data);
+    } catch (error) {
+      console.error("Error sorting products:", error);
+    }
   };
 
   const handleModal = () => {
@@ -167,7 +189,6 @@ const Produtos = () => {
     EditedProduct.preco = NewProdutoPreco;
 
     EditedProduct.estoque = NewProdutoEstoque;
-    
 
     const response = await Api.put(
       "/EditarProduto",
@@ -202,37 +223,45 @@ const Produtos = () => {
     <Container style={{ marginTop: 20 }}>
       <Header />
       <h1>Lista de Produtos</h1>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Button
-          variant="primary"
-          onClick={handleModal}
-          style={{ marginRight: "10px" }}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          Cadastrar Novo Produto
-        </Button>
-        <Form>
-          <Form.Group controlId="formBasicSearch">
-            <Form.Control
-              type="text"
-              placeholder="Pesquisar Produto"
-              value={searchTerm}
-              onChange={(e) => {
-                handleSearch(e);
-                if (e.target.value === "") {
-                  setClientes(allClientes);
-                }
-              }}
-            />
-          </Form.Group>
-        </Form>
-      </div>
+          <Button
+            variant="primary"
+            onClick={handleModal}
+            style={{ marginRight: "10px" }}
+          >
+            Cadastrar Novo Produto
+          </Button>
+          <Form>
+            <Form.Group controlId="formBasicSort" style={{ marginRight: 10 }}>
+              <Form.Control as="select" value={criterio} onChange={handleSort}>
+                <option value="">Sem Ordenação</option>
+                <option value="nome">Nome</option>
+                <option value="preco">Preço</option>
+                <option value="estoque">Estoque</option>
+                {/* Adicione mais opções conforme necessário */}
+              </Form.Control>
+            </Form.Group>
+          </Form>
+          <Form>
+            <Form.Group controlId="formBasicSearch">
+              <Form.Control
+                type="text"
+                placeholder="Pesquisar por nome"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  handleSearch(e);
+                }}
+              />
+            </Form.Group>
+          </Form>
+        </div>
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Cadastro de novo Produto</Modal.Title>
@@ -314,47 +343,53 @@ const Produtos = () => {
       </Modal>
 
       <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nome</th>
-            <th>Preco</th>
-            <th>Estoque</th>
-            <th>Acoes</th>
-          </tr>
-        </thead>
-        <tbody>
-          {produtos.map((product) => (
-            <tr key={product.id}>
-              <td>{product.id}</td>
-              <td>{product.nome}</td>
-              <td>{product.preco}</td>
-              <td>{product.estoque}</td>
-
-              <td>
-                <Button
-                  onClick={() => {
-                    handleDeleteProduct(product.id);
-                  }}
-                  style={{ marginRight: 10 }}
-                >
-                  <BsTrash />
-                </Button>
-                <Button
-                  onClick={() => {
-                    setEditData(product),
-                      handleEditProduct(product.id),
-                      setNewProdutoName(product.nome),
-                      setNewProdutoPreco(product.preco),
-                      setNewProdutoEstoque(product.estoque);
-                  }}
-                >
-                  <AiOutlineEdit />
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+      <thead>
+    <tr>
+      <th>#</th>
+      <th>Nome</th>
+      <th>Preco</th>
+      <th>Estoque</th>
+      <th>Acoes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {produtos.map((product) => (
+      <tr key={product.id}>
+        <td>{product.id}</td>
+        <td>{product.nome}</td>
+        <td>{product.preco}</td>
+        <td>{product.estoque}</td>
+        <td>
+          <Button
+            onClick={() => {
+              handleDeleteProduct(product.id);
+            }}
+            style={{ marginRight: 10 }}
+          >
+            <BsTrash />
+          </Button>
+          <Button
+            onClick={() => {
+              setEditData(product),
+                handleEditProduct(product.id),
+                setNewProdutoName(product.nome),
+                setNewProdutoPreco(product.preco),
+                setNewProdutoEstoque(product.estoque);
+            }}
+          >
+            <AiOutlineEdit />
+          </Button>
+        </td>
+      </tr>
+    ))}
+    {produtos.length === 0 && (
+      <tr>
+        <td colSpan="5" style={{ textAlign: "center" }}>
+          Nenhum produto encontrado.
+        </td>
+      </tr>
+    )}
+  </tbody>
       </Table>
     </Container>
   );

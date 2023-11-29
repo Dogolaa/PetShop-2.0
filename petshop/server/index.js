@@ -15,12 +15,20 @@ app.get('/', (request, response) => {
 });
 
 
-app.get('/BuscarClientes', (request, response) => {
-    const result = db.BuscarClientes();
+
+ app.get('/BuscarClientes', (request, response) => {
+    const criterio = request.query.criterio || '';
+    const termo = request.query.termo || ''; 
+    const result = db.BuscarClientes(criterio, termo); 
     result
-        .then(data=> response.json(data))
+        .then(data => response.json(data))
         .catch(err => console.log(err))
- });
+});
+
+
+
+
+
 
  app.post('/NovoCliente', (request, response) => {
     const result = db.NovoCliente(request.body);
@@ -42,11 +50,17 @@ app.get('/BuscarClientes', (request, response) => {
 
 
  app.get('/BuscarProdutos', (request, response) => {
-    const result = db.BuscarProdutos();
+    const criterio = request.query.criterio || '';
+    const termo = request.query.termo || ''; 
+    const result = db.BuscarProdutos(criterio, termo); 
     result
-        .then(data=> response.json(data))
+        .then(data => response.json(data))
         .catch(err => console.log(err))
- });
+});
+
+
+
+
 
  app.post('/NovoProduto', (request, response) => {
     const result = db.NovoProduto(request.body);

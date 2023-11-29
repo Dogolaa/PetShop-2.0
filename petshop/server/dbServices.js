@@ -28,18 +28,47 @@ class dbServices {
     return this.instance;
   }
 
-  async BuscarClientes() {
-    return new Promise((resolve, reject) => {
-      const query = "SELECT * FROM tbl_clientes";
-      connection.query(query, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
+
+  async BuscarClientes(criterio, termo) {
+    let query = "SELECT * FROM tbl_clientes";
+
+    if (termo) {
+        query += ` WHERE nome LIKE '%${termo}%'`;
+    }
+
+    if (criterio) {
+        switch (criterio) {
+            case 'nome':
+                query += " ORDER BY nome";
+                break;
+            case 'telefone':
+                query += " ORDER BY telefone";
+                break;
+            case 'endereco':
+                query += " ORDER BY endereco";
+                break;
+            // Adicione mais casos conforme necessário
+            default:
+                break;
         }
-      });
+    }
+
+    return new Promise((resolve, reject) => {
+        connection.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
     });
-  }
+}
+
+
+
+
+
+
 
   async NovoCliente(data) {
     try {
@@ -83,18 +112,40 @@ class dbServices {
     }
   }
 
-  async BuscarProdutos() {
-    return new Promise((resolve, reject) => {
-      const query = "SELECT * FROM tbl_produtos";
-      connection.query(query, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
+  async BuscarProdutos(criterio, termo) {
+    let query = "SELECT * FROM tbl_produtos";
+
+    if (termo) {
+        query += ` WHERE nome LIKE '%${termo}%'`;
+    }
+
+    if (criterio) {
+        switch (criterio) {
+            case 'nome':
+                query += " ORDER BY nome";
+                break;
+            case 'preco':
+                query += " ORDER BY preco";
+                break;
+            case 'estoque':
+                query += " ORDER BY estoque";
+                break;
+            // Adicione mais casos conforme necessário
+            default:
+                break;
         }
-      });
+    }
+
+    return new Promise((resolve, reject) => {
+        connection.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
     });
-  }
+}
 
   async NovoProduto(data) {
     try {
