@@ -18,6 +18,17 @@ const Clientes = () => {
   const [criterio, setCriterio] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
+
+  const rotularClientesPremium = async () => {
+    try {
+      // Fazer uma chamada à API para rotular clientes premium
+      const response = await Api.post("/RotularClientesPremium");
+      console.log("Clientes rotulados como Premium:", response.data);
+    } catch (error) {
+      console.error("Erro ao rotular clientes premium:", error);
+    }
+  };
+
   useEffect(() => {
     const getClientes = async () => {
       const responseClientes = await Api.get(
@@ -27,7 +38,12 @@ const Clientes = () => {
       setAllClientes(responseClientes.data);
     };
     getClientes();
+    // Chamar a função RotularClientesPremium após obter a lista de clientes
+    rotularClientesPremium();
   }, [criterio, searchTerm]);
+
+
+
 
   const [allClientes, setAllClientes] = useState([]);
 
@@ -41,6 +57,9 @@ const Clientes = () => {
   const [newClientesEmail, setNewClienteEmail] = useState("");
   const [newClientesTelefone, setNewClienteTelefone] = useState("");
   const [newClientesEndereco, setNewClienteEndereco] = useState("");
+
+  const [newClientesTipo, setNewClienteTipo] = useState("");
+
   const [Editdata, setEditData] = useState([]);
 
   const handleSearch = (e) => {
@@ -81,6 +100,7 @@ const Clientes = () => {
     setNewClienteEmail("");
     setNewClienteTelefone("");
     setNewClienteEndereco("");
+    setNewClienteTipo("");
   };
 
   const handleCloseEdit = () => {
@@ -125,6 +145,7 @@ const Clientes = () => {
       email: newClientesEmail,
       telefone: newClientesTelefone,
       endereco: newClientesEndereco,
+      tipo: newClientesTipo,
     };
 
     const response = await Api.post(
@@ -145,6 +166,7 @@ const Clientes = () => {
         email: newClientesEmail,
         telefone: newClientesTelefone,
         endereco: newClientesEndereco,
+        tipo: newClientesTipo,
       },
     ]);
 
@@ -154,6 +176,7 @@ const Clientes = () => {
     setNewClienteName("");
     setNewClienteTelefone("");
     setNewClienteEndereco("");
+    setNewClienteTipo("");
   };
 
   const handleEdit = async (e) => {
@@ -196,6 +219,7 @@ const Clientes = () => {
             email: newClientesEmail,
             telefone: newClientesTelefone,
             endereco: newClientesEndereco,
+            tipo: newClientesTipo,
           };
         }
         return cliente;
@@ -208,6 +232,7 @@ const Clientes = () => {
     setNewClienteEmail("");
     setNewClienteEndereco("");
     setNewClienteTelefone("");
+    setNewClienteTipo("");
   };
 
   return (
@@ -362,6 +387,7 @@ const Clientes = () => {
             <th>Email</th>
             <th>Telefone</th>
             <th>Endereço</th>
+            <th>Tipo</th>
             <th>Acoes</th>
           </tr>
         </thead>
@@ -373,6 +399,7 @@ const Clientes = () => {
               <td>{client.email}</td>
               <td>{client.telefone}</td>
               <td>{client.endereco}</td>
+              <td>{client.tipo}</td>
 
               <td>
                 <Button
@@ -391,6 +418,7 @@ const Clientes = () => {
                     setNewClienteEmail(client.email);
                     setNewClienteTelefone(client.telefone);
                     setNewClienteEndereco(client.endereco);
+                    setNewClienteTipo(client.tipo);
                   }}
                 >
                   <AiOutlineEdit />

@@ -158,6 +158,16 @@ app.get('/', (request, response) => {
         .catch(err => console.log(err))
   });
 
+  app.post('/RotularClientesPremium', async (request, response) => {
+    try {
+        const result = await db.RotularClientesPremium();
+        response.status(200).json(result);
+    } catch (error) {
+        console.error('Erro ao rotular clientes premium:', error);
+        response.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
 
 
 

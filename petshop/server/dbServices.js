@@ -28,61 +28,59 @@ class dbServices {
     return this.instance;
   }
 
-
   async BuscarClientes(criterio, termo) {
     let query = "SELECT * FROM tbl_clientes";
 
     if (termo) {
-        query += ` WHERE nome LIKE '%${termo}%'`;
+      query += ` WHERE nome LIKE '%${termo}%'`;
     }
 
     if (criterio) {
-        switch (criterio) {
-            case 'nome':
-                query += " ORDER BY nome";
-                break;
-            case 'telefone':
-                query += " ORDER BY telefone";
-                break;
-            case 'endereco':
-                query += " ORDER BY endereco";
-                break;
-            // Adicione mais casos conforme necessário
-            default:
-                break;
-        }
+      switch (criterio) {
+        case "nome":
+          query += " ORDER BY nome";
+          break;
+        case "telefone":
+          query += " ORDER BY telefone";
+          break;
+        case "endereco":
+          query += " ORDER BY endereco";
+          break;
+        // Adicione mais casos conforme necessário
+        default:
+          break;
+      }
     }
 
     return new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(result);
-            }
-        });
+      connection.query(query, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
     });
-}
-
-
-
-
-
-
+  }
 
   async NovoCliente(data) {
     try {
-      const query = "INSERT INTO tbl_clientes (nome,email,telefone,endereco) VALUES (?,?,?,?)";
+      const query =
+        "INSERT INTO tbl_clientes (nome,email,telefone,endereco) VALUES (?,?,?,?)";
       const nome = data.nome;
       const email = data.email;
       const telefone = data.telefone;
       const endereco = data.endereco;
 
       const response = await new Promise((resolve, reject) => {
-        connection.query(query, [nome, email, telefone, endereco], (err, result) => {
-          if (err) reject(new Error(err.message));
-          resolve(result);
-        });
+        connection.query(
+          query,
+          [nome, email, telefone, endereco],
+          (err, result) => {
+            if (err) reject(new Error(err.message));
+            resolve(result);
+          }
+        );
       });
       console.log("Cliente inserido com sucesso");
       return response;
@@ -116,36 +114,36 @@ class dbServices {
     let query = "SELECT * FROM tbl_produtos";
 
     if (termo) {
-        query += ` WHERE nome LIKE '%${termo}%'`;
+      query += ` WHERE nome LIKE '%${termo}%'`;
     }
 
     if (criterio) {
-        switch (criterio) {
-            case 'nome':
-                query += " ORDER BY nome";
-                break;
-            case 'preco':
-                query += " ORDER BY preco";
-                break;
-            case 'estoque':
-                query += " ORDER BY estoque";
-                break;
-            // Adicione mais casos conforme necessário
-            default:
-                break;
-        }
+      switch (criterio) {
+        case "nome":
+          query += " ORDER BY nome";
+          break;
+        case "preco":
+          query += " ORDER BY preco";
+          break;
+        case "estoque":
+          query += " ORDER BY estoque";
+          break;
+        // Adicione mais casos conforme necessário
+        default:
+          break;
+      }
     }
 
     return new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(result);
-            }
-        });
+      connection.query(query, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
     });
-}
+  }
 
   async NovoProduto(data) {
     try {
@@ -189,45 +187,45 @@ class dbServices {
     }
   }
 
-
   async BuscarServicos(criterio, termo) {
     let query = "SELECT * FROM tbl_servicos";
 
     if (termo) {
-        query += ` WHERE nome LIKE '%${termo}%'`;
+      query += ` WHERE nome LIKE '%${termo}%'`;
     }
 
     if (criterio) {
-        switch (criterio) {
-            case 'nome':
-                query += " ORDER BY nome";
-                break;
-            case 'preco':
-                query += " ORDER BY preco";
-                break;
-            case 'duracao':
-                query += " ORDER BY duracao";
-                break;
-            // Adicione mais casos conforme necessário
-            default:
-                break;
-        }
+      switch (criterio) {
+        case "nome":
+          query += " ORDER BY nome";
+          break;
+        case "preco":
+          query += " ORDER BY preco";
+          break;
+        case "duracao":
+          query += " ORDER BY duracao";
+          break;
+        // Adicione mais casos conforme necessário
+        default:
+          break;
+      }
     }
 
     return new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(result);
-            }
-        });
+      connection.query(query, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
     });
-}
+  }
 
   async NovoServico(data) {
     try {
-      const query = "INSERT INTO tbl_servicos (nome,preco,duracao) VALUES (?,?,?)";
+      const query =
+        "INSERT INTO tbl_servicos (nome,preco,duracao) VALUES (?,?,?)";
       const nome = data.nome;
       const preco = data.preco;
       const duracao = data.duracao;
@@ -346,7 +344,6 @@ class dbServices {
       query += `endereco = ?`;
       values.push(data.endereco);
     }
-  
 
     query += ` WHERE id = ?`;
     values.push(data.id);
@@ -490,87 +487,103 @@ class dbServices {
     });
   }
 
+  async buscarInformacoesVendas() {
+    try {
+      // Consulta para obter informações de produtos vendidos
+      const queryProdutos = `
+        SELECT tbl_produtos.id, tbl_produtos.preco
+        FROM tbl_produtos
+        JOIN tbl_vendas ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto)
+      `;
+      const produtos = await this.queryAsync(queryProdutos);
+  
+      // Consulta para obter informações de serviços vendidos
+      const queryServicos = `
+        SELECT tbl_servicos.id, tbl_servicos.preco
+        FROM tbl_servicos
+        JOIN tbl_vendas ON FIND_IN_SET(tbl_servicos.id, tbl_vendas.id_servico)
+      `;
+      const servicos = await this.queryAsync(queryServicos);
+  
+      // Calcular faturamento total de produtos
+      const faturamentoProdutos = produtos.reduce(
+        (total, produto) => total + parseFloat(produto.preco),
+        0
+      );
+  
+      // Calcular faturamento total de serviços
+      const faturamentoServicos = servicos.reduce(
+        (total, servico) => total + parseFloat(servico.preco),
+        0
+      );
+  
+      const resultadoFinal = {
+        valorProdutos: faturamentoProdutos,
+        valorServicos: faturamentoServicos,
+      };
+  
+      return resultadoFinal;
+    } catch (error) {
+      throw error;
+    }
+  }
   
 
-  async buscarInformacoesVendas() {
+  async RotularClientesPremium() {
     return new Promise(async (resolve, reject) => {
       try {
-        const queryProdutos = "SELECT * FROM tbl_produtos";
-        const produtos = await this.queryAsync(queryProdutos);
-
-        const queryServicos = "SELECT * FROM tbl_servicos";
-        const servicos = await this.queryAsync(queryServicos);
-
-        const queryProdutosVendidos = "SELECT id_produto FROM tbl_vendas;";
-        const idsProdutos = await this.queryAsync(queryProdutosVendidos);
-        
-        const queryServicosVendidos = "SELECT id_servico FROM tbl_vendas;";
-        const idsServicos = await this.queryAsync(queryServicosVendidos);
-        
-
-        const calcularFaturamentoProdutos = (ids, lista) => {
-          let totalFaturamento = 0;
-
-          ids.forEach((idString) => {
-            const idArray = idString.id_produto
-              .split(",")
-              .map((id) => id.trim());
-
-            idArray.forEach((id) => {
-              const produto = lista.find((item) => item.id == id);
-
-              if (produto) {
-                totalFaturamento += parseFloat(produto.preco);
-              }
-            });
-          });
-
-          return totalFaturamento;
-        };
-
-        const calcularFaturamentoServicos = (ids, lista) => {
-          let totalFaturamento = 0;
-
-          ids.forEach((idString) => {
-            const idArray = idString.id_servico
-              .split(",")
-              .map((id) => id.trim());
-
-            idArray.forEach((id) => {
-              const servico = lista.find((item) => item.id == id);
-
-              if (servico) {
-                totalFaturamento += parseFloat(servico.preco);
-              }
-            });
-          });
-
-          return totalFaturamento;
-        };
-
-        const faturamentoProdutos = calcularFaturamentoProdutos(
-          idsProdutos,
-          produtos
+        // Calcula a média de gastos em produtos
+        const queryMediaGastosProdutos = `
+            SELECT AVG(total_gastos) AS media_gastos_produtos
+            FROM (
+            SELECT id_cliente, SUM(preco) AS total_gastos
+            FROM tbl_vendas
+            JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto)
+            GROUP BY id_cliente
+          ) AS gastos_clientes
+                              `;
+        const resultMediaGastosProdutos = await this.queryAsync(
+          queryMediaGastosProdutos
         );
-        const faturamentoServicos = calcularFaturamentoServicos(
-          idsServicos,
-          servicos
+        const mediaGastosProdutos =
+          resultMediaGastosProdutos[0].media_gastos_produtos || 0;
+
+        // Atualiza os clientes para 'Premium' se o total gasto for maior que a média global e o gasto em produtos for maior que a média em produtos
+        const queryAtualizarClientes = `
+          UPDATE tbl_clientes 
+          SET tipo = 'Premium' 
+          WHERE id IN (
+            SELECT id_cliente 
+            FROM (
+              SELECT id_cliente, SUM(preco) AS total_gasto_produtos
+              FROM tbl_vendas 
+              JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto) 
+              GROUP BY id_cliente
+            ) AS gastos_produtos_clientes 
+            WHERE total_gasto_produtos > ${mediaGastosProdutos}
+          )
+          AND (
+            SELECT AVG(preco)
+            FROM tbl_produtos
+          ) > ALL (
+            SELECT SUM(preco) AS gasto_produto_cliente
+            FROM tbl_vendas
+            JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto)
+            WHERE tbl_clientes.id = tbl_vendas.id_cliente
+            GROUP BY tbl_vendas.id_cliente
+          )
+        `;
+
+        const resultAtualizarClientes = await this.queryAsync(
+          queryAtualizarClientes
         );
 
-        const resultadoFinal = {
-          valorProdutos: faturamentoProdutos,
-          valorServicos: faturamentoServicos,
-        };
-        resolve(resultadoFinal);
+        resolve(resultAtualizarClientes);
       } catch (error) {
         reject(error);
       }
     });
   }
-
-
-
-
 }
 
 module.exports = dbServices;
