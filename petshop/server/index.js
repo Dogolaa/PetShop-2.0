@@ -170,6 +170,77 @@ app.get('/', (request, response) => {
 
 
 
+//ATENDIMENTOS
+
+
+app.get('/BuscarAtendimentos', (request, response) => {
+    console.log('Recebida solicitação para buscar atendimentos');
+    const result = db.BuscarAtendimentos();
+    result
+      .then(data => response.json(data))
+      .catch(err => {
+        console.log(err);
+        response.status(500).json({ error: 'Internal Server Error' });
+      });
+  });
+  
+
+ app.post('/NovoAtendimento', (request, response) => {
+    const result = db.NovoAtendimento(request.body);
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
+
+
+ app.put('/EditarAtendimento', (request, response) => {
+    const result = db.EditarAtendimento(request.body);
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
+
+
+ app.delete('/DeletarAtendimento/:id', (request, response) => {
+    const id = request.params.id;
+    const result = db.DeletarAtendimento(id);
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
+
+
+
+ // Profissionais
+
+ app.get('/BuscarProfissionais', (request, response) => {
+    const criterio = request.query.criterio || '';
+    const termo = request.query.termo || ''; 
+    const result = db.BuscarProfissionais(criterio, termo); 
+    result
+        .then(data => response.json(data))
+        .catch(err => console.log(err))
+});
+
+
+ app.post('/NovoProfissional', (request, response) => {
+    const result = db.NovoProfissional(request.body);
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
+
+ app.delete('/DeletarProfissional/:id', (request, response) => {
+    const id = request.params.id;
+    const result = db.DeletarProfissional(id);
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
+
+
+
+
 
 
 app.get('/teste', (request, response) => {

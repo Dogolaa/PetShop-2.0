@@ -75,6 +75,9 @@ const Home = () => {
                     <Link to="/produtos">
                       <button className="btn btn-secondary btn-sm mr-2 me-2"> Novo Produto</button>
                     </Link>
+                    <Link to="/atendimentos">
+                      <button className="btn btn-secondary btn-sm mr-2 me-2"> Novo Atendimento</button>
+                    </Link>
                     <Link to="/servicos">
                       <button className="btn btn-secondary btn-sm mr-2 me-2"> Novo Serviço</button>
                     </Link>

@@ -20,6 +20,7 @@ function Header() {
                 <NavDropdown.Item href="/produtos">Produtos</NavDropdown.Item>
                 <NavDropdown.Item href="/servicos">Servicos</NavDropdown.Item>
                 <NavDropdown.Item href="/clientes">Clientes</NavDropdown.Item>
+                <NavDropdown.Item href="/atendimentos">Atendimentos</NavDropdown.Item>
               </NavDropdown>
             </Nav>
           </Navbar.Collapse>

@@ -594,10 +594,148 @@ class dbServices {
   
   
   
+  //ATENDIMENTOS
   
+  async BuscarAtendimentos() {
+    return new Promise((resolve, reject) => {
+      const query = "SELECT * FROM tbl_atendimentos";
+      connection.query(query, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  async NovoAtendimento(data) {
+    try {
+      const query =
+        "INSERT INTO tbl_atendimentos (id_profissional, hora_inicio, hora_fim) VALUES (?, ?, ?)";
   
+      const { profissional, hora_inicio, hora_fim } = data;
   
+      const response = await new Promise((resolve, reject) => {
+        connection.query(
+          query,
+          [profissional, hora_inicio, hora_fim],
+          (err, result) => {
+            if (err) reject(new Error(err.message));
+            resolve(result);
+          }
+        );
+      });
   
+      console.log("Atendimento inserido com sucesso");
+      return response;
+    } catch (error) {
+      console.log("Erro ao inserir atendimento: " + error);
+      throw error;
+    }
+  }
+  
+
+  async DeletarAtendimento(id) {
+    const query = `DELETE FROM tbl_atendimentos WHERE id = ?;`;
+    try {
+      const response = await new Promise((resolve, reject) => {
+        connection.query(query, id, (err, result) => {
+          if (err) reject(new Error(err.message));
+          resolve(result);
+        });
+      });
+
+      if (response.affectedRows == 0) {
+        throw new Error("Atendimento nao encontrada");
+      }
+      console.log("Atendimento foi deletado com sucesso");
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  }
+  
+
+
+  //Profissional
+
+
+  async BuscarProfissionais(criterio, termo) {
+    let query = "SELECT * FROM tbl_profissional";
+
+    if (termo) {
+      query += ` WHERE nome LIKE '%${termo}%'`;
+    }
+
+    if (criterio) {
+      switch (criterio) {
+        case "nome":
+          query += " ORDER BY nome";
+          break;
+        // Adicione mais casos conforme necessário
+        default:
+          break;
+      }
+    }
+
+    return new Promise((resolve, reject) => {
+      connection.query(query, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  // async NovoProfissional(data) {
+  //   try {
+  //     const query =
+  //       "INSERT INTO tbl_profissional (nome,email,telefone,endereco) VALUES (?,?,?,?)";
+  //     const nome = data.nome;
+  //     const email = data.email;
+  //     const telefone = data.telefone;
+  //     const endereco = data.endereco;
+
+  //     const response = await new Promise((resolve, reject) => {
+  //       connection.query(
+  //         query,
+  //         [nome, email, telefone, endereco],
+  //         (err, result) => {
+  //           if (err) reject(new Error(err.message));
+  //           resolve(result);
+  //         }
+  //       );
+  //     });
+  //     console.log("Cliente inserido com sucesso");
+  //     return response;
+  //   } catch (error) {
+  //     console.log("Erro ao inserir cliente :" + error);
+  //     throw error;
+  //   }
+  // }
+
+  // async DeletarCliente(id) {
+  //   const query = `DELETE FROM tbl_clientes WHERE id = ?;`;
+  //   try {
+  //     const response = await new Promise((resolve, reject) => {
+  //       connection.query(query, id, (err, result) => {
+  //         if (err) reject(new Error(err.message));
+  //         resolve(result);
+  //       });
+  //     });
+
+  //     if (response.affectedRows == 0) {
+  //       throw new Error("Cliente nao encontrado");
+  //     }
+  //     console.log("Cliente foi deletado com sucessos");
+  //   } catch (err) {
+  //     console.log(err);
+  //     throw err;
+  //   }
+  // }
   
   
 

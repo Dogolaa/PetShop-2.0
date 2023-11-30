@@ -5,6 +5,7 @@ import Clientes from './Screens/clientes'
 import Produtos from './Screens/Produtos'
 import Servicos from './Screens/servicos'
 import Vendas from './Screens/Vendas'
+import Atendimentos from './Screens/Atendimentos'
 
 const AppRoutes = () => {
 
@@ -18,6 +19,7 @@ const AppRoutes = () => {
                         <Route path='/Servicos' element = {<Servicos />}/>
                         <Route path='/produtos' element = {<Produtos />}/>
                         <Route path='/Vendas' element = {<Vendas />}/>
+                        <Route path='/Atendimentos' element = {<Atendimentos />}/>
                     </Routes>
             </Router>
         </>
