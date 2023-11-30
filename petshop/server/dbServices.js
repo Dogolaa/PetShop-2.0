@@ -189,18 +189,41 @@ class dbServices {
     }
   }
 
-  async BuscarServicos() {
-    return new Promise((resolve, reject) => {
-      const query = "SELECT * FROM tbl_servicos";
-      connection.query(query, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
+
+  async BuscarServicos(criterio, termo) {
+    let query = "SELECT * FROM tbl_servicos";
+
+    if (termo) {
+        query += ` WHERE nome LIKE '%${termo}%'`;
+    }
+
+    if (criterio) {
+        switch (criterio) {
+            case 'nome':
+                query += " ORDER BY nome";
+                break;
+            case 'preco':
+                query += " ORDER BY preco";
+                break;
+            case 'duracao':
+                query += " ORDER BY duracao";
+                break;
+            // Adicione mais casos conforme necessário
+            default:
+                break;
         }
-      });
+    }
+
+    return new Promise((resolve, reject) => {
+        connection.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
     });
-  }
+}
 
   async NovoServico(data) {
     try {

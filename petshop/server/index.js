@@ -79,12 +79,15 @@ app.get('/', (request, response) => {
 
 
 
+
  app.get('/BuscarServicos', (request, response) => {
-    const result = db.BuscarServicos();
+    const criterio = request.query.criterio || '';
+    const termo = request.query.termo || ''; 
+    const result = db.BuscarServicos(criterio, termo); 
     result
-        .then(data=> response.json(data))
+        .then(data => response.json(data))
         .catch(err => console.log(err))
- });
+});
 
  app.post('/NovoServico', (request, response) => {
     const result = db.NovoServico(request.body);
