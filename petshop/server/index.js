@@ -171,6 +171,7 @@ app.get('/', (request, response) => {
 
 
 
+
 app.get('/teste', (request, response) => {
     response.send("EndPoint de teste!")
  });

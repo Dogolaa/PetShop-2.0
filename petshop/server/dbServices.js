@@ -430,13 +430,13 @@ class dbServices {
   async NovaVenda(data) {
     try {
       const query =
-        "INSERT INTO tbl_vendas (id_cliente,id_produto,id_servico) VALUES (?,?,?)";
-
+        "INSERT INTO tbl_vendas (id_cliente,data, id_produto, id_servico) VALUES (?,NOW(), ?, ?)"; // 'NOW()' insere a data atual
+  
       const { cliente, produtos, servicos } = data;
-
+  
       const produtosString = produtos.join(", ");
       const servicosString = servicos.join(", ");
-
+  
       const response = await new Promise((resolve, reject) => {
         connection.query(
           query,
@@ -447,10 +447,10 @@ class dbServices {
           }
         );
       });
-      console.log("Cliente inserido com sucesso");
+      console.log("Venda inserida com sucesso");
       return response;
     } catch (error) {
-      console.log("Erro ao inserir cliente :" + error);
+      console.log("Erro ao inserir venda: " + error);
       throw error;
     }
   }
@@ -486,6 +486,23 @@ class dbServices {
       });
     });
   }
+
+  async queryAsyncParams(query, params) {
+    try {
+      return new Promise((resolve, reject) => {
+        connection.query(query, params, (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        });
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+  
 
   async buscarInformacoesVendas() {
     try {
@@ -527,8 +544,8 @@ class dbServices {
       throw error;
     }
   }
-  
 
+  
   async RotularClientesPremium() {
     try {
       // Calcula a média de gastos em produtos
@@ -541,37 +558,30 @@ class dbServices {
           GROUP BY id_cliente
         ) AS gastos_clientes
       `;
-      const resultMediaGastosProdutos = await this.queryAsync(queryMediaGastosProdutos);
+      const resultMediaGastosProdutos = await this.queryAsyncParams(queryMediaGastosProdutos, []);
       const mediaGastosProdutos = resultMediaGastosProdutos[0]?.media_gastos_produtos || 0;
   
       console.log('Média de Gastos em Produtos:', mediaGastosProdutos);
   
       // Atualiza os clientes para 'Premium' se o total gasto for maior que a média global e todos os gastos em produtos forem maiores que a média em produtos
       const queryAtualizarClientes = `
-        UPDATE tbl_clientes 
-        SET tipo = 'Premium' 
-        WHERE id IN (
-          SELECT id_cliente 
+        UPDATE tbl_clientes AS c
+        SET c.tipo = 'Premium' 
+        WHERE c.id IN (
+          SELECT g.id_cliente 
           FROM (
             SELECT id_cliente, COALESCE(SUM(preco), 0) AS total_gasto_produtos
             FROM tbl_vendas 
             JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto) 
             GROUP BY id_cliente
-          ) AS gastos_produtos_clientes 
-          WHERE total_gasto_produtos > ${mediaGastosProdutos}
-          AND ${mediaGastosProdutos} > ALL (
-            SELECT COALESCE(SUM(preco), 0) AS gasto_produto_cliente
-            FROM tbl_vendas
-            JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto)
-            WHERE tbl_clientes.id = tbl_vendas.id_cliente
-            GROUP BY tbl_vendas.id_cliente
-          )
+          ) AS g
+          WHERE g.total_gasto_produtos > ?
         )
       `;
   
       console.log('Query de Atualização de Clientes:', queryAtualizarClientes);
   
-      const resultAtualizarClientes = await this.queryAsync(queryAtualizarClientes);
+      const resultAtualizarClientes = await this.queryAsyncParams(queryAtualizarClientes, [mediaGastosProdutos]);
   
       console.log('Resultados da Atualização de Clientes:', resultAtualizarClientes);
   
@@ -581,6 +591,10 @@ class dbServices {
       throw error;
     }
   }
+  
+  
+  
+  
   
   
   

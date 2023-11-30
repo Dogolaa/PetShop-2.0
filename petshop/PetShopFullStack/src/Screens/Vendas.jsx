@@ -20,6 +20,8 @@ const Vendas = () => {
 
   const [vendas, setVendas] = useState([]);
 
+  const [datasVendas, setDatasVendas] = useState([]);
+
   const [newClientesName, setNewClienteName] = useState("");
   const [newClientesEmail, setNewClienteEmail] = useState("");
   const [Editdata, setEditData] = useState([]);
@@ -33,6 +35,7 @@ const Vendas = () => {
   const [servicosSelecionados, setServicosSelecionados] = useState();
 
   useEffect(() => {
+
     const getData = async () => {
       const responseVendas = await Api.get("/buscarVendas");
       setVendas(responseVendas.data);
@@ -44,6 +47,11 @@ const Vendas = () => {
         label: cliente.nome,
       }));
       setClientes(clientesFormatados);
+
+      const datas = responseVendas.data.map((venda) => venda.data);
+      setDatasVendas(datas);
+
+
 
       const responseProdutos = await Api.get("/buscarProdutos");
 
@@ -70,6 +78,18 @@ const Vendas = () => {
   const handleModal = () => {
     setShowModal(true);
   };
+
+
+  const formatarData = (data) => {
+    try {
+      const dataFormatada = new Date(data).toLocaleDateString('pt-BR'); // or use another desired format
+      return dataFormatada !== "Invalid Date" ? dataFormatada : data;
+    } catch (error) {
+      console.error("Erro ao formatar a data:", error);
+      return data;
+    }
+  };
+  
 
   const handleModalEdit = () => {
     setShowModalEdit(true);
@@ -293,61 +313,63 @@ const Vendas = () => {
       </Modal>
 
       <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nome</th>
-            <th>Produtos</th>
-            <th>Servicos</th>
-            <th>Preco</th>
-            <th>Acoes</th>
-          </tr>
-        </thead>
-        <tbody>
-          {vendas.map((venda) => (
-            <tr key={venda.id}>
-              <td>{venda.id}</td>
-              <td>
-                {
-                  clientes.find(
-                    (clientes) => clientes.value === venda.id_cliente
-                  )?.label
-                }
-              </td>
-              <td>
-                {venda.id_produto
-                  .split(",")
-                  .map(
-                    (id) =>
-                      produtos.find((produto) => produto.value == id)?.label
-                  )
-                  .join(",")}
-              </td>
-              <td>
-                {venda.id_servico
-                  .split(",")
-                  .map(
-                    (id) =>
-                      servicos.find((servico) => servico.value == id)?.label
-                  )
-                  .join(",")}
-              </td>
-              <td>{calculaPreco(venda.id_produto, venda.id_servico)}</td>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Nome</th>
+      <th>Data</th>
+      <th>Produtos</th>
+      <th>Servicos</th>
+      <th>Preco</th>
+      <th>Acoes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {vendas.map((venda, index) => (
+      <tr key={venda.id}>
+        <td>{venda.id}</td>
+        <td>
+          {
+            clientes.find(
+              (clientes) => clientes.value === venda.id_cliente
+            )?.label
+          }
+        </td>
+        <td>{formatarData(datasVendas[index])}</td>
+        <td>
+          {venda.id_produto
+            .split(",")
+            .map(
+              (id) =>
+                produtos.find((produto) => produto.value == id)?.label
+            )
+            .join(",")}
+        </td>
+        <td>
+          {venda.id_servico
+            .split(",")
+            .map(
+              (id) =>
+                servicos.find((servico) => servico.value == id)?.label
+            )
+            .join(",")}
+        </td>
+        <td>{calculaPreco(venda.id_produto, venda.id_servico)}</td>
+        <td>
+          <Button
+            onClick={() => {
+              handleDeleteVenda(venda.id);
+            }}
+            style={{ marginRight: 10 }}
+          >
+            <BsTrash />
+          </Button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</Table>
 
-              <td>
-                <Button
-                  onClick={() => {
-                    handleDeleteVenda(venda.id);
-                  }}
-                  style={{ marginRight: 10 }}
-                >
-                  <BsTrash />
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
     </Container>
   );
 };
