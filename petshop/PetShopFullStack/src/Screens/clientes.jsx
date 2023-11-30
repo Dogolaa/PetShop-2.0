@@ -131,7 +131,7 @@ const Clientes = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-
+  
     if (
       newClientesName == null ||
       newClientesName == undefined ||
@@ -140,6 +140,7 @@ const Clientes = () => {
       alert("nome nao pode ser nulo!");
       return;
     }
+    
     const newCliente = {
       nome: newClientesName,
       email: newClientesEmail,
@@ -147,37 +148,45 @@ const Clientes = () => {
       endereco: newClientesEndereco,
       tipo: newClientesTipo,
     };
-
-    const response = await Api.post(
-      "/NovoCliente",
-      JSON.stringify(newCliente),
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-
-    console.log(response.data.insertId);
-
-    setClientes([
-      ...clientes,
-      {
-        id: response.data.insertId,
-        nome: newClientesName,
-        email: newClientesEmail,
-        telefone: newClientesTelefone,
-        endereco: newClientesEndereco,
-        tipo: newClientesTipo,
-      },
-    ]);
-
-    handleClose();
-
-    setNewClienteEmail("");
-    setNewClienteName("");
-    setNewClienteTelefone("");
-    setNewClienteEndereco("");
-    setNewClienteTipo("");
+  
+    try {
+      const response = await Api.post(
+        "/NovoCliente",
+        JSON.stringify(newCliente),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+  
+      console.log(response.data.insertId);
+  
+      setClientes([
+        ...clientes,
+        {
+          id: response.data.insertId,
+          nome: newClientesName,
+          email: newClientesEmail,
+          telefone: newClientesTelefone,
+          endereco: newClientesEndereco,
+          tipo: newClientesTipo,
+        },
+      ]);
+  
+      handleClose();
+  
+      setNewClienteEmail("");
+      setNewClienteName("");
+      setNewClienteTelefone("");
+      setNewClienteEndereco("");
+      setNewClienteTipo("");
+  
+      // Recarregar a página após a inserção bem-sucedida
+      window.location.reload();
+    } catch (error) {
+      console.error("Erro ao salvar cliente:", error);
+    }
   };
+  
 
   const handleEdit = async (e) => {
     e.preventDefault();
@@ -252,7 +261,7 @@ const Clientes = () => {
           onClick={handleModal}
           style={{ marginRight: "10px" }}
         >
-          Cadastrar Novo Produto
+          Cadastrar Novo Cliente
         </Button>
         <Form>
           <Form.Group controlId="formBasicSort" style={{ marginRight: 10 }} >

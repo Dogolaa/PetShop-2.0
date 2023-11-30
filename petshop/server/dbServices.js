@@ -535,30 +535,37 @@ class dbServices {
       const queryMediaGastosProdutos = `
         SELECT AVG(total_gastos) AS media_gastos_produtos
         FROM (
-          SELECT id_cliente, SUM(preco) AS total_gastos
+          SELECT id_cliente, COALESCE(SUM(preco), 0) AS total_gastos
           FROM tbl_vendas
           JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto)
           GROUP BY id_cliente
         ) AS gastos_clientes
       `;
       const resultMediaGastosProdutos = await this.queryAsync(queryMediaGastosProdutos);
-      const mediaGastosProdutos = resultMediaGastosProdutos[0].media_gastos_produtos || 0;
+      const mediaGastosProdutos = resultMediaGastosProdutos[0]?.media_gastos_produtos || 0;
   
       console.log('Média de Gastos em Produtos:', mediaGastosProdutos);
   
-      // Atualiza os clientes para 'Premium' se o total gasto for maior que a média global e o gasto em produtos for maior que a média em produtos
+      // Atualiza os clientes para 'Premium' se o total gasto for maior que a média global e todos os gastos em produtos forem maiores que a média em produtos
       const queryAtualizarClientes = `
         UPDATE tbl_clientes 
         SET tipo = 'Premium' 
         WHERE id IN (
           SELECT id_cliente 
           FROM (
-            SELECT id_cliente, SUM(preco) AS total_gasto_produtos
+            SELECT id_cliente, COALESCE(SUM(preco), 0) AS total_gasto_produtos
             FROM tbl_vendas 
             JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto) 
             GROUP BY id_cliente
           ) AS gastos_produtos_clientes 
           WHERE total_gasto_produtos > ${mediaGastosProdutos}
+          AND ${mediaGastosProdutos} > ALL (
+            SELECT COALESCE(SUM(preco), 0) AS gasto_produto_cliente
+            FROM tbl_vendas
+            JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto)
+            WHERE tbl_clientes.id = tbl_vendas.id_cliente
+            GROUP BY tbl_vendas.id_cliente
+          )
         )
       `;
   
@@ -574,6 +581,10 @@ class dbServices {
       throw error;
     }
   }
+  
+  
+  
+  
   
 
   
