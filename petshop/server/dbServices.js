@@ -529,61 +529,92 @@ class dbServices {
   }
   
 
-  async RotularClientesPremium() {
-    return new Promise(async (resolve, reject) => {
-      try {
-        // Calcula a média de gastos em produtos
-        const queryMediaGastosProdutos = `
-            SELECT AVG(total_gastos) AS media_gastos_produtos
-            FROM (
-            SELECT id_cliente, SUM(preco) AS total_gastos
-            FROM tbl_vendas
-            JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto)
-            GROUP BY id_cliente
-          ) AS gastos_clientes
-                              `;
-        const resultMediaGastosProdutos = await this.queryAsync(
-          queryMediaGastosProdutos
-        );
-        const mediaGastosProdutos =
-          resultMediaGastosProdutos[0].media_gastos_produtos || 0;
+async RotularClientesPremium() {
+  try {
+    // Calcula a média de gastos em produtos
+    const queryMediaGastosProdutos = `
+      SELECT AVG(total_gastos) AS media_gastos_produtos
+      FROM (
+        SELECT id_cliente, SUM(preco) AS total_gastos
+        FROM tbl_vendas
+        JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto)
+        GROUP BY id_cliente
+      ) AS gastos_clientes
+    `;
+    const resultMediaGastosProdutos = await this.queryAsync(queryMediaGastosProdutos);
+    const mediaGastosProdutos = resultMediaGastosProdutos[0].media_gastos_produtos || 0;
 
-        // Atualiza os clientes para 'Premium' se o total gasto for maior que a média global e o gasto em produtos for maior que a média em produtos
-        const queryAtualizarClientes = `
-          UPDATE tbl_clientes 
-          SET tipo = 'Premium' 
-          WHERE id IN (
-            SELECT id_cliente 
-            FROM (
-              SELECT id_cliente, SUM(preco) AS total_gasto_produtos
-              FROM tbl_vendas 
-              JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto) 
-              GROUP BY id_cliente
-            ) AS gastos_produtos_clientes 
-            WHERE total_gasto_produtos > ${mediaGastosProdutos}
-          )
-          AND (
-            SELECT AVG(preco)
-            FROM tbl_produtos
-          ) > ALL (
-            SELECT SUM(preco) AS gasto_produto_cliente
-            FROM tbl_vendas
-            JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto)
-            WHERE tbl_clientes.id = tbl_vendas.id_cliente
-            GROUP BY tbl_vendas.id_cliente
-          )
-        `;
+    console.log('Média de Gastos em Produtos:', mediaGastosProdutos);
 
-        const resultAtualizarClientes = await this.queryAsync(
-          queryAtualizarClientes
-        );
+    // Atualiza os clientes para 'Premium' se o total gasto for maior que a média global e o gasto em produtos for maior que a média em produtos
+    const queryAtualizarClientes = `
+      UPDATE tbl_clientes 
+      SET tipo = 'Premium' 
+      WHERE id IN (
+        SELECT id_cliente 
+        FROM (
+          SELECT id_cliente, SUM(preco) AS total_gasto_produtos
+          FROM tbl_vendas 
+          JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto) 
+          GROUP BY id_cliente
+        ) AS gastos_produtos_clientes 
+        WHERE total_gasto_produtos > ${mediaGastosProdutos}
+      )
+      AND (
+        SELECT AVG(preco) AS avg_preco
+        FROM tbl_produtos
+      ) > ALL (
+        SELECT SUM(preco) AS gasto_produto_cliente
+        FROM tbl_vendas
+        JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto)
+        WHERE tbl_clientes.id = tbl_vendas.id_cliente
+        GROUP BY tbl_vendas.id_cliente
+      )
+    `;
 
-        resolve(resultAtualizarClientes);
-      } catch (error) {
-        reject(error);
-      }
-    });
+    console.log('Query de Atualização de Clientes:', queryAtualizarClientes);
+
+    // Verifica quais clientes atendem à condição total_gasto_produtos > mediaGastosProdutos
+    const queryClientesAtendendoCondicao = `
+      SELECT id_cliente, SUM(preco) AS total_gasto_produtos
+      FROM tbl_vendas 
+      JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto) 
+      GROUP BY id_cliente
+      HAVING total_gasto_produtos > ${mediaGastosProdutos};
+    `;
+    console.log('Clientes Atendendo à Condição:', await this.queryAsync(queryClientesAtendendoCondicao));
+
+    // Verifica se a condição ALL é atendida para algum cliente
+    const queryCondicaoALL = `
+      SELECT AVG(preco) AS avg_preco
+      FROM tbl_produtos
+    `;
+    const resultAvgPreco = await this.queryAsync(queryCondicaoALL);
+    console.log('AVG(preco):', resultAvgPreco);
+
+    // Adiciona um tratamento para a condição ALL
+    const avgPreco = resultAvgPreco[0].avg_preco || 0;
+    const queryClientesAtendendoCondicaoALL = `
+      SELECT id_cliente
+      FROM tbl_vendas
+      JOIN tbl_produtos ON FIND_IN_SET(tbl_produtos.id, tbl_vendas.id_produto)
+      GROUP BY tbl_vendas.id_cliente
+      HAVING AVG(preco) > ALL (SELECT ${avgPreco});
+    `;
+    console.log('Clientes Atendendo à Condição ALL:', await this.queryAsync(queryClientesAtendendoCondicaoALL));
+
+    const resultAtualizarClientes = await this.queryAsync(queryAtualizarClientes);
+
+    console.log('Resultados da Atualização de Clientes:', resultAtualizarClientes);
+
+    return resultAtualizarClientes;
+  } catch (error) {
+    console.error('Erro ao rotular clientes como Premium:', error);
+    throw error;
   }
+}
+
+  
 }
 
 module.exports = dbServices;
