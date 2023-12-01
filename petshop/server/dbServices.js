@@ -148,7 +148,7 @@ class dbServices {
   async NovoProduto(data) {
     try {
       const query =
-        "INSERT INTO tbl_produtos (nome,estoque,preco) VALUES (?,?,?)";
+        "INSERT INTO tbl_produtos (nome,preco,estoque) VALUES (?,?,?)";
       const nome = data.nome;
       const preco = data.preco;
       const estoque = data.estoque;
