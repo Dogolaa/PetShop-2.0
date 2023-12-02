@@ -6,7 +6,9 @@ function Header() {
     <>
       <Navbar bg="light" expand="lg" fixed="top">
         <Container>
-          <Navbar.Brand href="/">PetShop Mari</Navbar.Brand>
+          <Navbar.Brand href="/">
+            <img src="../src/assets/logo.svg" />
+          </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse
             id="basic-navbar-nav"
@@ -20,9 +22,15 @@ function Header() {
                 <NavDropdown.Item href="/produtos">Produtos</NavDropdown.Item>
                 <NavDropdown.Item href="/servicos">Servicos</NavDropdown.Item>
                 <NavDropdown.Item href="/clientes">Clientes</NavDropdown.Item>
-                <NavDropdown.Item href="/atendimentos">Atendimentos</NavDropdown.Item>
-                <NavDropdown.Item href="/fornecedor">Fornecedor</NavDropdown.Item>
-                <NavDropdown.Item href="/profissional">Profissional</NavDropdown.Item>
+                <NavDropdown.Item href="/atendimentos">
+                  Atendimentos
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/fornecedor">
+                  Fornecedor
+                </NavDropdown.Item>
+                <NavDropdown.Item href="/profissional">
+                  Profissional
+                </NavDropdown.Item>
               </NavDropdown>
             </Nav>
           </Navbar.Collapse>
