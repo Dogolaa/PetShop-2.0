@@ -9,6 +9,7 @@
   height: 72px;
   background: linear-gradient(145deg, #4f6cd4, #5e80fb);
   box-shadow: 1px 1px 16px #5676e6, -5px -5px 5px #5a7af0;
+  margin-bottom: 24px;
 
   .navbar-brand img {
     width: 140px;
@@ -67,38 +68,6 @@
 
     .actions-buttons {
       flex-direction: column;
-      width: 100%;
-    }
-
-    .nova-venda-btn {
-      position: relative;
-      background-color: var(--accent-color);
-      border-radius: 8px;
-      box-shadow: rgb(131, 179, 29) 0px 3px 0px 0px;
-      background-repeat: no-repeat;
-      box-sizing: border-box;
-      height: 44px !important;
-      color: #fff;
-      border: none;
-      transition: all 0.3s ease-in-out;
-      z-index: 1;
-      overflow: hidden;
-      padding-top: 4px;
-      margin-bottom: 8px;
-    }
-    .nova-venda-btn::before {
-      content: "";
-      background-color: rgb(131, 179, 29);
-      width: 0;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: -1;
-      transition: width 700ms ease-in-out;
-      display: inline-block;
-    }
-    .nova-venda-btn:hover::before {
       width: 100%;
     }
 

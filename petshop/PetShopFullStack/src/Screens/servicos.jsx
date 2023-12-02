@@ -217,9 +217,10 @@ const Servicos = () => {
   return (
     <Container style={{ marginTop: 20 }}>
       <Header />
-      <h1>Lista de Servicos</h1>
+      <h1 className="page-title">Lista de Servicos</h1>
 
       <div
+        className="group-buttons"
         style={{
           display: "flex",
           justifyContent: "center",
@@ -229,7 +230,7 @@ const Servicos = () => {
         <Button
           variant="primary"
           onClick={handleModal}
-          style={{ marginRight: "10px" }}
+          style={{ marginRight: "10px", marginTop: "0" }}
         >
           Cadastrar Novo Servico
         </Button>
@@ -359,6 +360,7 @@ const Servicos = () => {
               <td>{services.duracao}</td>
               <td>
                 <Button
+                  className="actions-btn"
                   onClick={() => {
                     handleDeleteService(services.id);
                   }}
@@ -367,6 +369,7 @@ const Servicos = () => {
                   <BsTrash />
                 </Button>
                 <Button
+                  className="actions-btn"
                   onClick={() => {
                     setEditData(services),
                       handleEditService(services.id),

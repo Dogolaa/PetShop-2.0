@@ -30,8 +30,6 @@ const Produtos = () => {
 
   const [allProdutos, setAllProdutos] = useState([]);
 
-
-
   const [showModal, setShowModal] = useState(false);
 
   const [showModalEdit, setShowModalEdit] = useState(false);
@@ -51,7 +49,6 @@ const Produtos = () => {
     );
     setProdutos(filteredProdutos);
   };
-  
 
   const handleSort = async (e) => {
     const selectedCriterio = e.target.value;
@@ -222,46 +219,53 @@ const Produtos = () => {
   return (
     <Container style={{ marginTop: 20 }}>
       <Header />
-      <h1>Lista de Produtos</h1>
-        <div
+      <h1 style={{ marginTop: "84px" }}>Lista de Produtos</h1>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginBottom: "24px",
+          marginTop: "16px",
+        }}
+      >
+        <Button
+          variant="primary"
+          onClick={handleModal}
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            marginRight: "10px",
+            backgroundColor: "#baff29",
+            border: "1px solid rgb(131, 179, 29)",
+            marginTop: "0",
           }}
         >
-          <Button
-            variant="primary"
-            onClick={handleModal}
-            style={{ marginRight: "10px" }}
-          >
-            Cadastrar Novo Produto
-          </Button>
-          <Form>
-            <Form.Group controlId="formBasicSort" style={{ marginRight: 10 }}>
-              <Form.Control as="select" value={criterio} onChange={handleSort}>
-                <option value="">Sem Ordenação</option>
-                <option value="nome">Nome</option>
-                <option value="preco">Preço</option>
-                <option value="estoque">Estoque</option>
-                {/* Adicione mais opções conforme necessário */}
-              </Form.Control>
-            </Form.Group>
-          </Form>
-          <Form>
-            <Form.Group controlId="formBasicSearch">
-              <Form.Control
-                type="text"
-                placeholder="Pesquisar por nome"
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  handleSearch(e);
-                }}
-              />
-            </Form.Group>
-          </Form>
-        </div>
+          Cadastrar Novo Produto
+        </Button>
+        <Form>
+          <Form.Group controlId="formBasicSort" style={{ marginRight: 10 }}>
+            <Form.Control as="select" value={criterio} onChange={handleSort}>
+              <option value="">Sem Ordenação</option>
+              <option value="nome">Nome</option>
+              <option value="preco">Preço</option>
+              <option value="estoque">Estoque</option>
+              {/* Adicione mais opções conforme necessário */}
+            </Form.Control>
+          </Form.Group>
+        </Form>
+        <Form>
+          <Form.Group controlId="formBasicSearch">
+            <Form.Control
+              type="text"
+              placeholder="Pesquisar por nome"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                handleSearch(e);
+              }}
+            />
+          </Form.Group>
+        </Form>
+      </div>
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Cadastro de novo Produto</Modal.Title>
@@ -343,53 +347,55 @@ const Produtos = () => {
       </Modal>
 
       <Table striped bordered hover>
-      <thead>
-    <tr>
-      <th>#</th>
-      <th>Nome</th>
-      <th>Preco</th>
-      <th>Estoque</th>
-      <th>Acoes</th>
-    </tr>
-  </thead>
-  <tbody>
-    {produtos.map((product) => (
-      <tr key={product.id}>
-        <td>{product.id}</td>
-        <td>{product.nome}</td>
-        <td>{product.preco}</td>
-        <td>{product.estoque}</td>
-        <td>
-          <Button
-            onClick={() => {
-              handleDeleteProduct(product.id);
-            }}
-            style={{ marginRight: 10 }}
-          >
-            <BsTrash />
-          </Button>
-          <Button
-            onClick={() => {
-              setEditData(product),
-                handleEditProduct(product.id),
-                setNewProdutoName(product.nome),
-                setNewProdutoPreco(product.preco),
-                setNewProdutoEstoque(product.estoque);
-            }}
-          >
-            <AiOutlineEdit />
-          </Button>
-        </td>
-      </tr>
-    ))}
-    {produtos.length === 0 && (
-      <tr>
-        <td colSpan="5" style={{ textAlign: "center" }}>
-          Nenhum produto encontrado.
-        </td>
-      </tr>
-    )}
-  </tbody>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Preco</th>
+            <th>Estoque</th>
+            <th>Acoes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {produtos.map((product) => (
+            <tr key={product.id}>
+              <td>{product.id}</td>
+              <td>{product.nome}</td>
+              <td>{product.preco}</td>
+              <td>{product.estoque}</td>
+              <td>
+                <Button
+                  className="actions-btn"
+                  onClick={() => {
+                    handleDeleteProduct(product.id);
+                  }}
+                  style={{ marginRight: 10 }}
+                >
+                  <BsTrash />
+                </Button>
+                <Button
+                  className="actions-btn"
+                  onClick={() => {
+                    setEditData(product),
+                      handleEditProduct(product.id),
+                      setNewProdutoName(product.nome),
+                      setNewProdutoPreco(product.preco),
+                      setNewProdutoEstoque(product.estoque);
+                  }}
+                >
+                  <AiOutlineEdit />
+                </Button>
+              </td>
+            </tr>
+          ))}
+          {produtos.length === 0 && (
+            <tr>
+              <td colSpan="5" style={{ textAlign: "center" }}>
+                Nenhum produto encontrado.
+              </td>
+            </tr>
+          )}
+        </tbody>
       </Table>
     </Container>
   );

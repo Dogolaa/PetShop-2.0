@@ -18,7 +18,6 @@ const Fornecedor = () => {
   const [criterio, setCriterio] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-
   useEffect(() => {
     const getFornecedor = async () => {
       const responseFornecedor = await Api.get(
@@ -29,9 +28,6 @@ const Fornecedor = () => {
     };
     getFornecedor();
   }, [criterio, searchTerm]);
-
-
-
 
   const [allFornecedor, setAllFornecedor] = useState([]);
 
@@ -45,7 +41,6 @@ const Fornecedor = () => {
   const [newFornecedorCNPJ, setNewFornecedorCNPJ] = useState("");
   const [newFornecedorTelefone, setNewFornecedorTelefone] = useState("");
   const [newFornecedorEndereco, setNewFornecedorEndereco] = useState("");
-
 
   const [Editdata, setEditData] = useState([]);
 
@@ -117,7 +112,7 @@ const Fornecedor = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-  
+
     if (
       newFornecedorName == null ||
       newFornecedorName == undefined ||
@@ -126,14 +121,14 @@ const Fornecedor = () => {
       alert("nome nao pode ser nulo!");
       return;
     }
-    
+
     const newFornecedor = {
       nome: newFornecedorName,
       cnpj: newFornecedorCNPJ,
       telefone: newFornecedorTelefone,
       endereco: newFornecedorEndereco,
     };
-  
+
     try {
       const response = await Api.post(
         "/NovoFornecedor",
@@ -142,9 +137,9 @@ const Fornecedor = () => {
           headers: { "Content-Type": "application/json" },
         }
       );
-  
+
       console.log(response.data.insertId);
-  
+
       setFornecedor([
         ...fornecedor,
         {
@@ -155,21 +150,20 @@ const Fornecedor = () => {
           endereco: newFornecedorEndereco,
         },
       ]);
-  
+
       handleClose();
-  
+
       setNewFornecedorCNPJ("");
       setNewFornecedorName("");
       setNewFornecedorTelefone("");
       setNewFornecedorEndereco("");
-  
+
       // Recarregar a página após a inserção bem-sucedida
       window.location.reload();
     } catch (error) {
       console.error("Erro ao salvar fornecedor:", error);
     }
   };
-  
 
   const handleEdit = async (e) => {
     e.preventDefault();
@@ -228,9 +222,10 @@ const Fornecedor = () => {
   return (
     <Container style={{ marginTop: 20 }}>
       <Header />
-      <h1>Lista de Fornecedor</h1>
+      <h1 className="page-title">Lista de Fornecedor</h1>
 
       <div
+        className="group-buttons"
         style={{
           display: "flex",
           justifyContent: "center",
@@ -240,12 +235,12 @@ const Fornecedor = () => {
         <Button
           variant="primary"
           onClick={handleModal}
-          style={{ marginRight: "10px" }}
+          style={{ marginRight: "10px", marginTop: "0" }}
         >
           Cadastrar Novo Fornecedor
         </Button>
         <Form>
-          <Form.Group controlId="formBasicSort" style={{ marginRight: 10 }} >
+          <Form.Group controlId="formBasicSort" style={{ marginRight: 10 }}>
             <Form.Control as="select" value={criterio} onChange={handleSort}>
               <option value="">Sem Ordenação</option>
               <option value="nome">Nome</option>
@@ -392,6 +387,7 @@ const Fornecedor = () => {
 
               <td>
                 <Button
+                  className="actions-btn"
                   onClick={() => {
                     handleDeleteForneced(forneced.id);
                   }}
@@ -400,6 +396,7 @@ const Fornecedor = () => {
                   <BsTrash />
                 </Button>
                 <Button
+                  className="actions-btn"
                   onClick={() => {
                     setEditData(forneced);
                     handleEditForneced(forneced.id);

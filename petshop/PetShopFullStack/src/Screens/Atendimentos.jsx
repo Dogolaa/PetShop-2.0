@@ -88,8 +88,6 @@ const Atendimentos = () => {
     console.log("Editando atendimento: ", Editdata);
   };
 
-
-  //teste
   const handleSave = async (e) => {
     e.preventDefault();
 
@@ -176,8 +174,12 @@ const Atendimentos = () => {
   return (
     <Container style={{ marginTop: 20 }}>
       <Header />
-      <h1>Lista de Atendimentos</h1>
-      <Button variant="primary" onClick={handleModal}>
+      <h1 className="page-title">Lista de Atendimentos</h1>
+      <Button
+        style={{ marginBottom: "24px", marginTop: "16px" }}
+        variant="primary"
+        onClick={handleModal}
+      >
         Cadastrar novo atendimento
       </Button>
       <Modal show={showModal} onHide={handleClose}>
@@ -280,11 +282,12 @@ const Atendimentos = () => {
                   )?.label
                 }
               </td>
-                <td>{atendimento.hora_inicio}</td>
-                <td>{atendimento.hora_fim}</td>
+              <td>{atendimento.hora_inicio}</td>
+              <td>{atendimento.hora_fim}</td>
 
               <td>
                 <Button
+                  className="actions-btn"
                   onClick={() => {
                     handleDeleteAtendimento(atendimento.id);
                   }}

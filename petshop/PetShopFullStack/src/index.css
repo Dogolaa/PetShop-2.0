@@ -17,3 +17,64 @@ body {
   background-color: var(--background-color);
   font-family: "Poppins", sans-serif;
 }
+
+.page-title {
+  margin-top: 84px;
+}
+
+.group-buttons {
+  margin-bottom: 24px;
+  margin-top: 16px;
+}
+
+/* Botões */
+.actions-btn {
+  margin-top: 0 !important;
+  width: 32px;
+  height: 32px;
+}
+.actions-btn svg {
+  height: 18px;
+  width: 18px;
+  position: relative;
+  top: -4px;
+  right: 6px;
+}
+
+.btn-primary {
+  background-color: var(--accent-color) !important;
+  border: 1px solid rgb(131, 179, 29);
+  margin-top: 24px;
+}
+
+.nova-venda-btn {
+  position: relative;
+  background-color: var(--accent-color) !important;
+  border-radius: 8px;
+  box-shadow: rgb(131, 179, 29) 0px 3px 0px 0px;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+  height: 44px !important;
+  color: #fff;
+  border: none;
+  transition: all 0.3s ease-in-out;
+  z-index: 1;
+  overflow: hidden;
+  padding-top: 4px;
+  margin-bottom: 8px;
+}
+.nova-venda-btn::before {
+  content: "";
+  background-color: rgb(131, 179, 29);
+  width: 0;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  transition: width 700ms ease-in-out;
+  display: inline-block;
+}
+.nova-venda-btn:hover::before {
+  width: 100%;
+}

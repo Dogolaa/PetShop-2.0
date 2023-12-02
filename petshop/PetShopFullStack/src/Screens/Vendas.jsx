@@ -35,7 +35,6 @@ const Vendas = () => {
   const [servicosSelecionados, setServicosSelecionados] = useState();
 
   useEffect(() => {
-
     const getData = async () => {
       const responseVendas = await Api.get("/buscarVendas");
       setVendas(responseVendas.data);
@@ -50,8 +49,6 @@ const Vendas = () => {
 
       const datas = responseVendas.data.map((venda) => venda.data);
       setDatasVendas(datas);
-
-
 
       const responseProdutos = await Api.get("/buscarProdutos");
 
@@ -79,17 +76,15 @@ const Vendas = () => {
     setShowModal(true);
   };
 
-
   const formatarData = (data) => {
     try {
-      const dataFormatada = new Date(data).toLocaleDateString('pt-BR'); // or use another desired format
+      const dataFormatada = new Date(data).toLocaleDateString("pt-BR"); // or use another desired format
       return dataFormatada !== "Invalid Date" ? dataFormatada : data;
     } catch (error) {
       console.error("Erro ao formatar a data:", error);
       return data;
     }
   };
-  
 
   const handleModalEdit = () => {
     setShowModalEdit(true);
@@ -126,10 +121,14 @@ const Vendas = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-  
-    const IDsProdutos = produtosSelecionados ? produtosSelecionados.map((item) => item.value) : [];
-    const IDsServicos = servicosSelecionados ? servicosSelecionados.map((item) => item.value) : [];
-  
+
+    const IDsProdutos = produtosSelecionados
+      ? produtosSelecionados.map((item) => item.value)
+      : [];
+    const IDsServicos = servicosSelecionados
+      ? servicosSelecionados.map((item) => item.value)
+      : [];
+
     if (
       clienteSelecionado == null ||
       clienteSelecionado == undefined ||
@@ -138,22 +137,21 @@ const Vendas = () => {
       alert("Cliente não pode ser nulo!");
       return;
     }
-  
+
     const newVenda = {
       cliente: clienteSelecionado.value,
       produtos: IDsProdutos,
       servicos: IDsServicos,
     };
-  
+
     const response = await Api.post("/NovaVenda", JSON.stringify(newVenda), {
       headers: { "Content-Type": "application/json" },
     });
-  
+
     if (response.status === 200) {
       window.location.reload();
     }
   };
-  
 
   const handleEdit = async (e) => {
     e.preventDefault();
@@ -218,28 +216,32 @@ const Vendas = () => {
     });
 
     const idsSelecionadosServicos = listaServicos
-        .split(",")
-        .map((id) => parseInt(id.trim()));
+      .split(",")
+      .map((id) => parseInt(id.trim()));
 
     idsSelecionadosServicos.forEach((id) => {
-        const servico = servicos.find((servico) => servico.value == id);
-    
-        if (servico) {
-            total += Number(servico.preco);
-        } else {
-            console.warn(`Servico com id ${id} não encontrado`);
-        }
-        });
+      const servico = servicos.find((servico) => servico.value == id);
+
+      if (servico) {
+        total += Number(servico.preco);
+      } else {
+        console.warn(`Servico com id ${id} não encontrado`);
+      }
+    });
 
     return total;
-    
   };
 
   return (
     <Container style={{ marginTop: 20 }}>
       <Header />
-      <h1>Lista de Vendas</h1>
-      <Button variant="primary" onClick={handleModal}>
+      <h1 style={{ marginTop: "2em", color: "#2d2d2d" }}>Lista de Vendas</h1>
+      <Button
+        className="nova-venda-btn"
+        variant="primary"
+        onClick={handleModal}
+        style={{ marginTop: "16px", marginBottom: "40px " }}
+      >
         Cadastrar novo venda
       </Button>
       <Modal show={showModal} onHide={handleClose}>
@@ -274,7 +276,17 @@ const Vendas = () => {
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit">
+            <Button
+              variant="primary"
+              type="submit"
+              className="nova-venda-btn"
+              style={{
+                marginTop: "24px",
+                width: "120px",
+                paddingTop: "6px",
+                zIndex: "0",
+              }}
+            >
               Salvar
             </Button>
           </Form>
@@ -305,7 +317,7 @@ const Vendas = () => {
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit" className="nova-venda-btn">
               Salvar
             </Button>
           </Form>
@@ -313,63 +325,62 @@ const Vendas = () => {
       </Modal>
 
       <Table striped bordered hover>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Nome</th>
-      <th>Data</th>
-      <th>Produtos</th>
-      <th>Servicos</th>
-      <th>Preco</th>
-      <th>Acoes</th>
-    </tr>
-  </thead>
-  <tbody>
-    {vendas.map((venda, index) => (
-      <tr key={venda.id}>
-        <td>{venda.id}</td>
-        <td>
-          {
-            clientes.find(
-              (clientes) => clientes.value === venda.id_cliente
-            )?.label
-          }
-        </td>
-        <td>{formatarData(datasVendas[index])}</td>
-        <td>
-          {venda.id_produto
-            .split(",")
-            .map(
-              (id) =>
-                produtos.find((produto) => produto.value == id)?.label
-            )
-            .join(",")}
-        </td>
-        <td>
-          {venda.id_servico
-            .split(",")
-            .map(
-              (id) =>
-                servicos.find((servico) => servico.value == id)?.label
-            )
-            .join(",")}
-        </td>
-        <td>{calculaPreco(venda.id_produto, venda.id_servico)}</td>
-        <td>
-          <Button
-            onClick={() => {
-              handleDeleteVenda(venda.id);
-            }}
-            style={{ marginRight: 10 }}
-          >
-            <BsTrash />
-          </Button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</Table>
-
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Data</th>
+            <th>Produtos</th>
+            <th>Servicos</th>
+            <th>Preco</th>
+            <th>Acoes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {vendas.map((venda, index) => (
+            <tr key={venda.id}>
+              <td>{venda.id}</td>
+              <td>
+                {
+                  clientes.find(
+                    (clientes) => clientes.value === venda.id_cliente
+                  )?.label
+                }
+              </td>
+              <td>{formatarData(datasVendas[index])}</td>
+              <td>
+                {venda.id_produto
+                  .split(",")
+                  .map(
+                    (id) =>
+                      produtos.find((produto) => produto.value == id)?.label
+                  )
+                  .join(",")}
+              </td>
+              <td>
+                {venda.id_servico
+                  .split(",")
+                  .map(
+                    (id) =>
+                      servicos.find((servico) => servico.value == id)?.label
+                  )
+                  .join(",")}
+              </td>
+              <td>{calculaPreco(venda.id_produto, venda.id_servico)}</td>
+              <td>
+                <Button
+                  onClick={() => {
+                    handleDeleteVenda(venda.id);
+                  }}
+                  style={{ marginRight: 10 }}
+                >
+                  <BsTrash />
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     </Container>
   );
 };

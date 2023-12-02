@@ -18,7 +18,6 @@ const Profissional = () => {
   const [criterio, setCriterio] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-
   useEffect(() => {
     const getProfissional = async () => {
       const responseProfissional = await Api.get(
@@ -29,9 +28,6 @@ const Profissional = () => {
     };
     getProfissional();
   }, [criterio, searchTerm]);
-
-
-
 
   const [allProfissional, setAllProfissional] = useState([]);
 
@@ -47,7 +43,6 @@ const Profissional = () => {
   const [newProfissionalCargo, setNewProfissionalCargo] = useState("");
   const [newProfissionalSalario, setNewProfissionalSalario] = useState("");
   const [newProfissionalEndereco, setNewProfissionalEndereco] = useState("");
-
 
   const [Editdata, setEditData] = useState([]);
 
@@ -121,7 +116,7 @@ const Profissional = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-  
+
     if (
       newProfissionalName == null ||
       newProfissionalName == undefined ||
@@ -130,7 +125,7 @@ const Profissional = () => {
       alert("nome nao pode ser nulo!");
       return;
     }
-    
+
     const newProfissional = {
       nome: newProfissionalName,
       email: newProfissionalEmail,
@@ -139,7 +134,7 @@ const Profissional = () => {
       cargo: newProfissionalCargo,
       salario: newProfissionalSalario,
     };
-  
+
     try {
       const response = await Api.post(
         "/NovoProfissional",
@@ -148,9 +143,9 @@ const Profissional = () => {
           headers: { "Content-Type": "application/json" },
         }
       );
-  
+
       console.log(response.data.insertId);
-  
+
       setProfissional([
         ...profissional,
         {
@@ -163,23 +158,22 @@ const Profissional = () => {
           salario: newProfissionalSalario,
         },
       ]);
-  
+
       handleClose();
-  
+
       setNewProfissionalEmail("");
       setNewProfissionalName("");
       setNewProfissionalTelefone("");
       setNewProfissionalEndereco("");
       setNewProfissionalCargo("");
       setNewProfissionalSalario("");
-  
+
       // Recarregar a página após a inserção bem-sucedida
       window.location.reload();
     } catch (error) {
       console.error("Erro ao salvar profissional:", error);
     }
   };
-  
 
   const handleEdit = async (e) => {
     e.preventDefault();
@@ -246,9 +240,10 @@ const Profissional = () => {
   return (
     <Container style={{ marginTop: 20 }}>
       <Header />
-      <h1>Lista de Profissional</h1>
+      <h1 className="page-title">Lista de Profissional</h1>
 
       <div
+        className="group-buttons"
         style={{
           display: "flex",
           justifyContent: "center",
@@ -258,12 +253,12 @@ const Profissional = () => {
         <Button
           variant="primary"
           onClick={handleModal}
-          style={{ marginRight: "10px" }}
+          style={{ marginRight: "10px", marginTop: "0" }}
         >
           Cadastrar Novo Profissional
         </Button>
         <Form>
-          <Form.Group controlId="formBasicSort" style={{ marginRight: 10 }} >
+          <Form.Group controlId="formBasicSort" style={{ marginRight: 10 }}>
             <Form.Control as="select" value={criterio} onChange={handleSort}>
               <option value="">Sem Ordenação</option>
               <option value="nome">Nome</option>
@@ -331,7 +326,7 @@ const Profissional = () => {
                 onChange={(e) => setNewProfissionalEndereco(e.target.value)}
               />
             </FormGroup>
-            
+
             <FormGroup controlId="formBasicCargo">
               <Form.Label>Cargo</Form.Label>
               <Form.Control
@@ -420,7 +415,6 @@ const Profissional = () => {
               />
             </FormGroup>
 
-
             <Button variant="primary" type="submit">
               Salvar
             </Button>
@@ -453,6 +447,7 @@ const Profissional = () => {
               <td>{profissiona.salario}</td>
               <td>
                 <Button
+                  className="actions-btn"
                   onClick={() => {
                     handleDeleteProfissional(profissiona.id);
                   }}
@@ -461,6 +456,7 @@ const Profissional = () => {
                   <BsTrash />
                 </Button>
                 <Button
+                  className="actions-btn"
                   onClick={() => {
                     setEditData(profissiona);
                     handleEditProfissional(profissiona.id);

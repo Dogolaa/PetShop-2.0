@@ -18,7 +18,6 @@ const Clientes = () => {
   const [criterio, setCriterio] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-
   const rotularClientesPremium = async () => {
     try {
       // Fazer uma chamada à API para rotular clientes premium
@@ -41,9 +40,6 @@ const Clientes = () => {
     // Chamar a função RotularClientesPremium após obter a lista de clientes
     rotularClientesPremium();
   }, [criterio, searchTerm]);
-
-
-
 
   const [allClientes, setAllClientes] = useState([]);
 
@@ -131,7 +127,7 @@ const Clientes = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-  
+
     if (
       newClientesName == null ||
       newClientesName == undefined ||
@@ -140,7 +136,7 @@ const Clientes = () => {
       alert("nome nao pode ser nulo!");
       return;
     }
-    
+
     const newCliente = {
       nome: newClientesName,
       email: newClientesEmail,
@@ -148,7 +144,7 @@ const Clientes = () => {
       endereco: newClientesEndereco,
       tipo: newClientesTipo,
     };
-  
+
     try {
       const response = await Api.post(
         "/NovoCliente",
@@ -157,9 +153,9 @@ const Clientes = () => {
           headers: { "Content-Type": "application/json" },
         }
       );
-  
+
       console.log(response.data.insertId);
-  
+
       setClientes([
         ...clientes,
         {
@@ -171,22 +167,21 @@ const Clientes = () => {
           tipo: newClientesTipo,
         },
       ]);
-  
+
       handleClose();
-  
+
       setNewClienteEmail("");
       setNewClienteName("");
       setNewClienteTelefone("");
       setNewClienteEndereco("");
       setNewClienteTipo("");
-  
+
       // Recarregar a página após a inserção bem-sucedida
       window.location.reload();
     } catch (error) {
       console.error("Erro ao salvar cliente:", error);
     }
   };
-  
 
   const handleEdit = async (e) => {
     e.preventDefault();
@@ -247,9 +242,10 @@ const Clientes = () => {
   return (
     <Container style={{ marginTop: 20 }}>
       <Header />
-      <h1>Lista de Clientes</h1>
+      <h1 className="page-title">Lista de Clientes</h1>
 
       <div
+        className="group-buttons"
         style={{
           display: "flex",
           justifyContent: "center",
@@ -259,12 +255,12 @@ const Clientes = () => {
         <Button
           variant="primary"
           onClick={handleModal}
-          style={{ marginRight: "10px" }}
+          style={{ marginRight: "10px", marginTop: "0" }}
         >
           Cadastrar Novo Cliente
         </Button>
         <Form>
-          <Form.Group controlId="formBasicSort" style={{ marginRight: 10 }} >
+          <Form.Group controlId="formBasicSort" style={{ marginRight: 10 }}>
             <Form.Control as="select" value={criterio} onChange={handleSort}>
               <option value="">Sem Ordenação</option>
               <option value="nome">Nome</option>
@@ -416,10 +412,12 @@ const Clientes = () => {
                     handleDeleteClient(client.id);
                   }}
                   style={{ marginRight: 10 }}
+                  className="actions-btn"
                 >
                   <BsTrash />
                 </Button>
                 <Button
+                  className="actions-btn"
                   onClick={() => {
                     setEditData(client);
                     handleEditClient(client.id);
