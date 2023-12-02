@@ -283,6 +283,22 @@ app.get('/BuscarFornecedor', (request, response) => {
  });
 
 
+
+
+ app.get('/calcularTempoAtendimento/:idAtendimento', async (req, res) => {
+    try {
+      const idAtendimento = req.params.idAtendimento;
+      const tempoAtendimento = await dbServices.CalcularTempoAtendimento(idAtendimento);
+      res.status(200).json({ tempoAtendimento });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+
+
+
+
 app.get('/teste', (request, response) => {
     response.send("EndPoint de teste!")
  });

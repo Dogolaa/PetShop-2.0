@@ -36,7 +36,7 @@ const Atendimentos = () => {
       const responseAtendimentos = await Api.get("/BuscarAtendimentos");
       setAtendimentos(responseAtendimentos.data);
 
-      const responseProfissionais = await Api.get("/BuscarProfissionais");
+      const responseProfissionais = await Api.get("/BuscarProfissional");
 
       const profissionaisFormatados = responseProfissionais.data.map(
         (profissional) => ({
