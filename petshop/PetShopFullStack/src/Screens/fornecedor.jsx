@@ -14,61 +14,48 @@ import { BsTrash } from "react-icons/bs";
 import Header from "../Components/header.jsx";
 import { AiOutlineEdit } from "react-icons/ai";
 
-const Clientes = () => {
+const Fornecedor = () => {
   const [criterio, setCriterio] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
 
-  const rotularClientesPremium = async () => {
-    try {
-      // Fazer uma chamada à API para rotular clientes premium
-      const response = await Api.post("/RotularClientesPremium");
-      console.log("Clientes rotulados como Premium:", response.data);
-    } catch (error) {
-      console.error("Erro ao rotular clientes premium:", error);
-    }
-  };
-
   useEffect(() => {
-    const getClientes = async () => {
-      const responseClientes = await Api.get(
-        `/BuscarClientes?criterio=${criterio}&termo=${searchTerm}`
+    const getFornecedor = async () => {
+      const responseFornecedor = await Api.get(
+        `/BuscarFornecedor?criterio=${criterio}&termo=${searchTerm}`
       );
-      setClientes(responseClientes.data);
-      setAllClientes(responseClientes.data);
+      setFornecedor(responseFornecedor.data);
+      setAllFornecedor(responseFornecedor.data);
     };
-    getClientes();
-    // Chamar a função RotularClientesPremium após obter a lista de clientes
-    rotularClientesPremium();
+    getFornecedor();
   }, [criterio, searchTerm]);
 
 
 
 
-  const [allClientes, setAllClientes] = useState([]);
+  const [allFornecedor, setAllFornecedor] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
 
   const [showModalEdit, setShowModalEdit] = useState(false);
 
-  const [clientes, setClientes] = useState([]);
+  const [fornecedor, setFornecedor] = useState([]);
 
-  const [newClientesName, setNewClienteName] = useState("");
-  const [newClientesEmail, setNewClienteEmail] = useState("");
-  const [newClientesTelefone, setNewClienteTelefone] = useState("");
-  const [newClientesEndereco, setNewClienteEndereco] = useState("");
+  const [newFornecedorName, setNewFornecedorName] = useState("");
+  const [newFornecedorCNPJ, setNewFornecedorCNPJ] = useState("");
+  const [newFornecedorTelefone, setNewFornecedorTelefone] = useState("");
+  const [newFornecedorEndereco, setNewFornecedorEndereco] = useState("");
 
-  const [newClientesTipo, setNewClienteTipo] = useState("");
 
   const [Editdata, setEditData] = useState([]);
 
   const handleSearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
     setSearchTerm(searchTerm);
-    const filteredClientes = allClientes.filter((cliente) =>
-      cliente.nome.toLowerCase().includes(searchTerm)
+    const filteredFornecedor = allFornecedor.filter((fornecedor) =>
+      fornecedor.nome.toLowerCase().includes(searchTerm)
     );
-    setClientes(filteredClientes);
+    setFornecedor(filteredFornecedor);
   };
 
   const handleSort = async (e) => {
@@ -76,11 +63,11 @@ const Clientes = () => {
     setCriterio(selectedCriterio);
 
     try {
-      const responseClientes = await Api.get(
-        `/BuscarClientes?criterio=${selectedCriterio}`
+      const responseFornecedor = await Api.get(
+        `/BuscarFornecedor?criterio=${selectedCriterio}`
       );
-      setClientes(responseClientes.data);
-      setAllClientes(responseClientes.data);
+      setFornecedor(responseFornecedor.data);
+      setAllFornecedor(responseFornecedor.data);
     } catch (error) {
       console.error("Error sorting products:", error);
     }
@@ -96,11 +83,10 @@ const Clientes = () => {
 
   const handleClose = () => {
     setShowModal(false);
-    setNewClienteName("");
-    setNewClienteEmail("");
-    setNewClienteTelefone("");
-    setNewClienteEndereco("");
-    setNewClienteTipo("");
+    setNewFornecedorName("");
+    setNewFornecedorCNPJ("");
+    setNewFornecedorTelefone("");
+    setNewFornecedorEndereco("");
   };
 
   const handleCloseEdit = () => {
@@ -108,15 +94,15 @@ const Clientes = () => {
     setShowModalEdit(false);
   };
 
-  const handleDeleteClient = async (id) => {
-    console.log("Deletando cliente com o id: ", id);
+  const handleDeleteForneced = async (id) => {
+    console.log("Deletando fornecedor com o id: ", id);
 
     try {
-      const response = await Api.delete(`DeletarCliente/${id}`);
+      const response = await Api.delete(`DeletarFornecedor/${id}`);
 
       if (response.status === 200) {
-        setClientes((prevClientes) =>
-          prevClientes.filter((cliente) => cliente.id !== id)
+        setFornecedor((prevFornecedor) =>
+          prevFornecedor.filter((fornecedor) => fornecedor.id !== id)
         );
       }
     } catch (err) {
@@ -124,35 +110,34 @@ const Clientes = () => {
     }
   };
 
-  const handleEditClient = async (id) => {
+  const handleEditForneced = async (id) => {
     handleModalEdit();
-    console.log("Editando cliente: ", Editdata);
+    console.log("Editando fornecedor: ", Editdata);
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
   
     if (
-      newClientesName == null ||
-      newClientesName == undefined ||
-      newClientesName == ""
+      newFornecedorName == null ||
+      newFornecedorName == undefined ||
+      newFornecedorName == ""
     ) {
       alert("nome nao pode ser nulo!");
       return;
     }
     
-    const newCliente = {
-      nome: newClientesName,
-      email: newClientesEmail,
-      telefone: newClientesTelefone,
-      endereco: newClientesEndereco,
-      tipo: newClientesTipo,
+    const newFornecedor = {
+      nome: newFornecedorName,
+      cnpj: newFornecedorCNPJ,
+      telefone: newFornecedorTelefone,
+      endereco: newFornecedorEndereco,
     };
   
     try {
       const response = await Api.post(
-        "/NovoCliente",
-        JSON.stringify(newCliente),
+        "/NovoFornecedor",
+        JSON.stringify(newFornecedor),
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -160,30 +145,28 @@ const Clientes = () => {
   
       console.log(response.data.insertId);
   
-      setClientes([
-        ...clientes,
+      setFornecedor([
+        ...fornecedor,
         {
           id: response.data.insertId,
-          nome: newClientesName,
-          email: newClientesEmail,
-          telefone: newClientesTelefone,
-          endereco: newClientesEndereco,
-          tipo: newClientesTipo,
+          nome: newFornecedorName,
+          cnpj: newFornecedorCNPJ,
+          telefone: newFornecedorTelefone,
+          endereco: newFornecedorEndereco,
         },
       ]);
   
       handleClose();
   
-      setNewClienteEmail("");
-      setNewClienteName("");
-      setNewClienteTelefone("");
-      setNewClienteEndereco("");
-      setNewClienteTipo("");
+      setNewFornecedorCNPJ("");
+      setNewFornecedorName("");
+      setNewFornecedorTelefone("");
+      setNewFornecedorEndereco("");
   
       // Recarregar a página após a inserção bem-sucedida
       window.location.reload();
     } catch (error) {
-      console.error("Erro ao salvar cliente:", error);
+      console.error("Erro ao salvar fornecedor:", error);
     }
   };
   
@@ -192,62 +175,60 @@ const Clientes = () => {
     e.preventDefault();
 
     if (
-      newClientesName == null ||
-      newClientesName == undefined ||
-      newClientesName == ""
+      newFornecedorName == null ||
+      newFornecedorName == undefined ||
+      newFornecedorName == ""
     ) {
       alert("nome nao pode ser nulo!");
       return;
     }
 
-    const EditedClient = {};
-    EditedClient.id = Editdata.id;
+    const EditedFornecedor = {};
+    EditedFornecedor.id = Editdata.id;
 
-    EditedClient.nome = newClientesName;
+    EditedFornecedor.nome = newFornecedorName;
 
-    EditedClient.email = newClientesEmail;
+    EditedFornecedor.cnpj = newFornecedorCNPJ;
 
-    EditedClient.telefone = newClientesTelefone;
+    EditedFornecedor.telefone = newFornecedorTelefone;
 
-    EditedClient.endereco = newClientesEndereco;
+    EditedFornecedor.endereco = newFornecedorEndereco;
 
     const response = await Api.put(
-      "/EditarCliente",
-      JSON.stringify(EditedClient),
+      "/EditarFornecedor",
+      JSON.stringify(EditedFornecedor),
       {
         headers: { "Content-Type": "application/json" },
       }
     );
 
-    setClientes((cliente) => {
-      return clientes.map((cliente) => {
-        if (cliente.id === Editdata.id) {
+    setFornecedor((fornecedor) => {
+      return fornecedor.map((fornecedor) => {
+        if (fornecedor.id === Editdata.id) {
           return {
-            ...cliente,
-            nome: newClientesName,
-            email: newClientesEmail,
-            telefone: newClientesTelefone,
-            endereco: newClientesEndereco,
-            tipo: newClientesTipo,
+            ...fornecedor,
+            nome: newFornecedorName,
+            cnpj: newFornecedorCNPJ,
+            telefone: newFornecedorTelefone,
+            endereco: newFornecedorEndereco,
           };
         }
-        return cliente;
+        return fornecedor;
       });
     });
 
     handleCloseEdit();
 
-    setNewClienteName("");
-    setNewClienteEmail("");
-    setNewClienteEndereco("");
-    setNewClienteTelefone("");
-    setNewClienteTipo("");
+    setNewFornecedorName("");
+    setNewFornecedorCNPJ("");
+    setNewFornecedorEndereco("");
+    setNewFornecedorTelefone("");
   };
 
   return (
     <Container style={{ marginTop: 20 }}>
       <Header />
-      <h1>Lista de Clientes</h1>
+      <h1>Lista de Fornecedor</h1>
 
       <div
         style={{
@@ -261,7 +242,7 @@ const Clientes = () => {
           onClick={handleModal}
           style={{ marginRight: "10px" }}
         >
-          Cadastrar Novo Cliente
+          Cadastrar Novo Fornecedor
         </Button>
         <Form>
           <Form.Group controlId="formBasicSort" style={{ marginRight: 10 }} >
@@ -270,6 +251,7 @@ const Clientes = () => {
               <option value="nome">Nome</option>
               <option value="telefone">Telefone</option>
               <option value="endereco">Endereco</option>
+              <option value="cnpj">CNPJ</option>
               {/* Adicione mais opções conforme necessário */}
             </Form.Control>
           </Form.Group>
@@ -291,7 +273,7 @@ const Clientes = () => {
 
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Cadastro de novo Cliente</Modal.Title>
+          <Modal.Title>Cadastro de novo Fornecedor</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSave}>
@@ -299,17 +281,17 @@ const Clientes = () => {
               <Form.Label>Nome</Form.Label>
               <Form.Control
                 type="Text"
-                placeholder="Digite o Nome do Cliente"
-                onChange={(e) => setNewClienteName(e.target.value)}
+                placeholder="Digite o Nome do Fornecedor"
+                onChange={(e) => setNewFornecedorName(e.target.value)}
               />
             </Form.Group>
 
-            <FormGroup controlId="formBasicEmail">
-              <Form.Label>Email</Form.Label>
+            <FormGroup controlId="formBasiccnpj">
+              <Form.Label>CNPJ</Form.Label>
               <Form.Control
-                type="email"
-                placeholder="Digite o email do Cliente"
-                onChange={(e) => setNewClienteEmail(e.target.value)}
+                type="cnpj"
+                placeholder="Digite o cnpj do Fornecedor"
+                onChange={(e) => setNewFornecedorCNPJ(e.target.value)}
               />
             </FormGroup>
 
@@ -317,8 +299,8 @@ const Clientes = () => {
               <Form.Label>Telefone</Form.Label>
               <Form.Control
                 type="tel"
-                placeholder="Digite o telefone do Cliente"
-                onChange={(e) => setNewClienteTelefone(e.target.value)}
+                placeholder="Digite o telefone do Fornecedor"
+                onChange={(e) => setNewFornecedorTelefone(e.target.value)}
               />
             </FormGroup>
 
@@ -326,8 +308,8 @@ const Clientes = () => {
               <Form.Label>Endereço</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Digite o endereço do Cliente"
-                onChange={(e) => setNewClienteEndereco(e.target.value)}
+                placeholder="Digite o endereço do Fornecedor"
+                onChange={(e) => setNewFornecedorEndereco(e.target.value)}
               />
             </FormGroup>
 
@@ -339,7 +321,7 @@ const Clientes = () => {
       </Modal>
       <Modal show={showModalEdit} onHide={handleCloseEdit}>
         <Modal.Header closeButton>
-          <Modal.Title>Edicao de Cliente</Modal.Title>
+          <Modal.Title>Edicao de Fornecedor</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleEdit}>
@@ -347,17 +329,17 @@ const Clientes = () => {
               <Form.Label>Nome</Form.Label>
               <Form.Control
                 type="Text"
-                onChange={(e) => setNewClienteName(e.target.value)}
+                onChange={(e) => setNewFornecedorName(e.target.value)}
                 defaultValue={Editdata.nome}
               />
             </Form.Group>
 
-            <Form.Group controlId="formBasicEmail">
-              <Form.Label>Email</Form.Label>
+            <Form.Group controlId="formBasiccnpj">
+              <Form.Label>CNPJ</Form.Label>
               <Form.Control
                 type="Text"
-                onChange={(e) => setNewClienteEmail(e.target.value)}
-                defaultValue={Editdata.email}
+                onChange={(e) => setNewFornecedorCNPJ(e.target.value)}
+                defaultValue={Editdata.cnpj}
               />
             </Form.Group>
 
@@ -365,8 +347,8 @@ const Clientes = () => {
               <Form.Label>Telefone</Form.Label>
               <Form.Control
                 type="tel"
-                placeholder="Digite o telefone do Cliente"
-                onChange={(e) => setNewClienteTelefone(e.target.value)}
+                placeholder="Digite o telefone do Fornecedor"
+                onChange={(e) => setNewFornecedorTelefone(e.target.value)}
                 defaultValue={Editdata.telefone}
               />
             </FormGroup>
@@ -375,8 +357,8 @@ const Clientes = () => {
               <Form.Label>Endereço</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Digite o endereço do Cliente"
-                onChange={(e) => setNewClienteEndereco(e.target.value)}
+                placeholder="Digite o endereço do Fornecedor"
+                onChange={(e) => setNewFornecedorEndereco(e.target.value)}
                 defaultValue={Editdata.endereco}
               />
             </FormGroup>
@@ -393,27 +375,25 @@ const Clientes = () => {
           <tr>
             <th>#</th>
             <th>Nome</th>
-            <th>Email</th>
+            <th>CNPJ</th>
             <th>Telefone</th>
             <th>Endereço</th>
-            <th>Tipo</th>
             <th>Acoes</th>
           </tr>
         </thead>
         <tbody>
-          {clientes.map((client) => (
-            <tr key={client.id}>
-              <td>{client.id}</td>
-              <td>{client.nome}</td>
-              <td>{client.email}</td>
-              <td>{client.telefone}</td>
-              <td>{client.endereco}</td>
-              <td>{client.tipo}</td>
+          {fornecedor.map((forneced) => (
+            <tr key={forneced.id}>
+              <td>{forneced.id}</td>
+              <td>{forneced.nome}</td>
+              <td>{forneced.cnpj}</td>
+              <td>{forneced.telefone}</td>
+              <td>{forneced.endereco}</td>
 
               <td>
                 <Button
                   onClick={() => {
-                    handleDeleteClient(client.id);
+                    handleDeleteForneced(forneced.id);
                   }}
                   style={{ marginRight: 10 }}
                 >
@@ -421,13 +401,12 @@ const Clientes = () => {
                 </Button>
                 <Button
                   onClick={() => {
-                    setEditData(client);
-                    handleEditClient(client.id);
-                    setNewClienteName(client.nome);
-                    setNewClienteEmail(client.email);
-                    setNewClienteTelefone(client.telefone);
-                    setNewClienteEndereco(client.endereco);
-                    setNewClienteTipo(client.tipo);
+                    setEditData(forneced);
+                    handleEditForneced(forneced.id);
+                    setNewFornecedorName(forneced.nome);
+                    setNewFornecedorCNPJ(forneced.cnpj);
+                    setNewFornecedorTelefone(forneced.telefone);
+                    setNewFornecedorEndereco(forneced.endereco);
                   }}
                 >
                   <AiOutlineEdit />
@@ -435,10 +414,10 @@ const Clientes = () => {
               </td>
             </tr>
           ))}
-          {clientes.length === 0 && (
+          {fornecedor.length === 0 && (
             <tr>
               <td colSpan="5" style={{ textAlign: "center" }}>
-                Nenhum cliente encontrado.
+                Nenhum fornecedor encontrado.
               </td>
             </tr>
           )}
@@ -448,4 +427,4 @@ const Clientes = () => {
   );
 };
 
-export default Clientes;
+export default Fornecedor;

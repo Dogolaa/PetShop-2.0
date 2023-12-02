@@ -660,25 +660,36 @@ class dbServices {
 
   //Profissional
 
-
-  async BuscarProfissionais(criterio, termo) {
+  async BuscarProfissional(criterio, termo) {
     let query = "SELECT * FROM tbl_profissional";
-
+  
     if (termo) {
       query += ` WHERE nome LIKE '%${termo}%'`;
     }
-
+  
     if (criterio) {
       switch (criterio) {
         case "nome":
           query += " ORDER BY nome";
           break;
+        case "telefone":
+          query += " ORDER BY telefone";
+          break;
+        case "endereco":
+          query += " ORDER BY endereco";
+          break;
+        case "cargo":
+          query += " ORDER BY cargo";
+          break;
+        case "salario":
+            query += " ORDER BY salario";
+            break;
         // Adicione mais casos conforme necessário
         default:
           break;
       }
     }
-
+  
     return new Promise((resolve, reject) => {
       connection.query(query, (err, result) => {
         if (err) {
@@ -689,57 +700,271 @@ class dbServices {
       });
     });
   }
+ 
 
-  // async NovoProfissional(data) {
-  //   try {
-  //     const query =
-  //       "INSERT INTO tbl_profissional (nome,email,telefone,endereco) VALUES (?,?,?,?)";
-  //     const nome = data.nome;
-  //     const email = data.email;
-  //     const telefone = data.telefone;
-  //     const endereco = data.endereco;
+   async NovoProfissional(data) {
+     try {
+      const query =
+         "INSERT INTO tbl_profissional (nome,email,telefone,endereco,cargo,salario) VALUES (?,?,?,?,?,?)";
+       const nome = data.nome;
+      const email = data.email;
+       const telefone = data.telefone;
+       const endereco = data.endereco;
+       const cargo = data.cargo;
+       const salario = data.salario;
 
-  //     const response = await new Promise((resolve, reject) => {
-  //       connection.query(
-  //         query,
-  //         [nome, email, telefone, endereco],
-  //         (err, result) => {
-  //           if (err) reject(new Error(err.message));
-  //           resolve(result);
-  //         }
-  //       );
-  //     });
-  //     console.log("Cliente inserido com sucesso");
-  //     return response;
-  //   } catch (error) {
-  //     console.log("Erro ao inserir cliente :" + error);
-  //     throw error;
-  //   }
-  // }
+      const response = await new Promise((resolve, reject) => {
+        connection.query(
+           query,
+         [nome, email, telefone, endereco, cargo, salario],
+          (err, result) => {
+             if (err) reject(new Error(err.message));
+            resolve(result);
+           }
+         );
+      });
+       console.log("Profissional inserido com sucesso");
+       return response;
+     } catch (error) {
+       console.log("Erro ao inserir profissional :" + error);
+       throw error;
+     }
+   }
 
-  // async DeletarCliente(id) {
-  //   const query = `DELETE FROM tbl_clientes WHERE id = ?;`;
-  //   try {
-  //     const response = await new Promise((resolve, reject) => {
-  //       connection.query(query, id, (err, result) => {
-  //         if (err) reject(new Error(err.message));
-  //         resolve(result);
-  //       });
-  //     });
+   async DeletarProfissional(id) {
+     const query = `DELETE FROM tbl_profissional WHERE id = ?;`;
+     try {
+       const response = await new Promise((resolve, reject) => {
+         connection.query(query, id, (err, result) => {
+           if (err) reject(new Error(err.message));
+           resolve(result);
+         });
+       });
 
-  //     if (response.affectedRows == 0) {
-  //       throw new Error("Cliente nao encontrado");
-  //     }
-  //     console.log("Cliente foi deletado com sucessos");
-  //   } catch (err) {
-  //     console.log(err);
-  //     throw err;
-  //   }
-  // }
+       if (response.affectedRows == 0) {
+         throw new Error("Profissional nao encontrado");
+       }
+       console.log("Profissional foi deletado com sucessos");
+     } catch (err) {
+     console.log(err);
+      throw err;
+     }
+  }
+  async EditarProfissional(data) {
+    let query = "UPDATE tbl_profissional SET ";
+    const values = [];
+    let isFirstSet = true;
+  
+    if (data.nome != null || data.nome != undefined) {
+      query += `nome = ?`;
+      values.push(data.nome);
+      isFirstSet = false;
+    }
+    if (data.email != null || data.email != undefined) {
+      if (!isFirstSet) {
+        query += ",";
+      }
+      query += `email = ?`;
+      values.push(data.email);
+      isFirstSet = false;
+    }
+    if (data.telefone != null || data.telefone != undefined) {
+      if (!isFirstSet) {
+        query += ",";
+      }
+      query += `telefone = ?`;
+      values.push(data.telefone);
+      isFirstSet = false;
+    }
+    if (data.endereco != null || data.endereco != undefined) {
+      if (!isFirstSet) {
+        query += ",";
+      }
+      query += `endereco = ?`;
+      values.push(data.endereco);
+      isFirstSet = false;
+    }
+    if (data.cargo != null || data.cargo != undefined) {
+      if (!isFirstSet) {
+        query += ",";
+      }
+      query += `cargo = ?`;
+      values.push(data.cargo);
+      isFirstSet = false;
+    }
+
+    if (data.salario != null || data.salario != undefined) {
+      if (!isFirstSet) {
+        query += ",";
+      }
+      query += `salario = ?`;
+      values.push(data.salario);
+    }
+  
+    query += ` WHERE id = ?`;
+    values.push(data.id);
+  
+    try {
+      const response = await new Promise((resolve, reject) => {
+        connection.query(query, values, (err, result) => {
+          if (err) reject(new Error(err.message));
+          resolve(result);
+        });
+      });
+  
+      if (response.affectedRows == 0) {
+        throw new Error("Profissional nao encontrado");
+      }
+      console.log("Profissional foi editado com sucesso");
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  }
   
   
 
   
+
+async BuscarFornecedor(criterio, termo) {
+  let query = "SELECT * FROM tbl_fornecedor";
+
+  if (termo) {
+    query += ` WHERE nome LIKE '%${termo}%'`;
+  }
+
+  if (criterio) {
+    switch (criterio) {
+      case "nome":
+        query += " ORDER BY nome";
+        break;
+      case "telefone":
+        query += " ORDER BY telefone";
+        break;
+      case "endereco":
+        query += " ORDER BY endereco";
+        break;
+      case "cnpj":
+        query += " ORDER BY cnpj";
+        break;
+      // Adicione mais casos conforme necessário
+      default:
+        break;
+    }
+  }
+
+  return new Promise((resolve, reject) => {
+    connection.query(query, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+async NovoFornecedor(data) {
+  try {
+    const query =
+      "INSERT INTO tbl_fornecedor (nome,cnpj,telefone,endereco) VALUES (?,?,?,?)";
+    const nome = data.nome;
+    const cnpj = data.cnpj;
+    const telefone = data.telefone;
+    const endereco = data.endereco;
+
+    const response = await new Promise((resolve, reject) => {
+      connection.query(
+        query,
+        [nome, cnpj, telefone, endereco],
+        (err, result) => {
+          if (err) reject(new Error(err.message));
+          resolve(result);
+        }
+      );
+    });
+    console.log("Fornecedor inserido com sucesso");
+    return response;
+  } catch (error) {
+    console.log("Erro ao inserir Fornecedor :" + error);
+    throw error;
+  }
+}
+
+async DeletarFornecedor(id) {
+  const query = `DELETE FROM tbl_fornecedor WHERE id = ?;`;
+  try {
+    const response = await new Promise((resolve, reject) => {
+      connection.query(query, id, (err, result) => {
+        if (err) reject(new Error(err.message));
+        resolve(result);
+      });
+    });
+
+    if (response.affectedRows == 0) {
+      throw new Error("Fornecedor nao encontrado");
+    }
+    console.log("Fornecedor foi deletado com sucessos");
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+async EditarFornecedor(data) {
+  let query = "UPDATE tbl_fornecedor SET ";
+  const values = [];
+  let isFirstSet = true;
+
+  if (data.nome != null || data.nome != undefined) {
+    query += `nome = ?`;
+    values.push(data.nome);
+    isFirstSet = false;
+  }
+  if (data.cnpj != null || data.cnpj != undefined) {
+    if (!isFirstSet) {
+      query += ",";
+    }
+    query += `cnpj = ?`;
+    values.push(data.cnpj);
+    isFirstSet = false;
+  }
+  if (data.telefone != null || data.telefone != undefined) {
+    if (!isFirstSet) {
+      query += ",";
+    }
+    query += `telefone = ?`;
+    values.push(data.telefone);
+    isFirstSet = false;
+  }
+  if (data.endereco != null || data.endereco != undefined) {
+    if (!isFirstSet) {
+      query += ",";
+    }
+    query += `endereco = ?`;
+    values.push(data.endereco);
+  }
+
+  query += ` WHERE id = ?`;
+  values.push(data.id);
+
+  try {
+    const response = await new Promise((resolve, reject) => {
+      connection.query(query, values, (err, result) => {
+        if (err) reject(new Error(err.message));
+        resolve(result);
+      });
+    });
+
+    if (response.affectedRows == 0) {
+      throw new Error("Fornecedor nao encontrado");
+    }
+    console.log("Fornecedor foi editado com sucesso");
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 }
 
 module.exports = dbServices;

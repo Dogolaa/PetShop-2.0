@@ -21,6 +21,8 @@ function Header() {
                 <NavDropdown.Item href="/servicos">Servicos</NavDropdown.Item>
                 <NavDropdown.Item href="/clientes">Clientes</NavDropdown.Item>
                 <NavDropdown.Item href="/atendimentos">Atendimentos</NavDropdown.Item>
+                <NavDropdown.Item href="/fornecedor">Fornecedor</NavDropdown.Item>
+                <NavDropdown.Item href="/profissional">Profissional</NavDropdown.Item>
               </NavDropdown>
             </Nav>
           </Navbar.Collapse>

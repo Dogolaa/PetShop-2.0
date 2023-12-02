@@ -6,6 +6,8 @@ import Produtos from './Screens/Produtos'
 import Servicos from './Screens/servicos'
 import Vendas from './Screens/Vendas'
 import Atendimentos from './Screens/Atendimentos'
+import Fornecedor from './Screens/fornecedor'
+import Profissional from './Screens/profissional'
 
 const AppRoutes = () => {
 
@@ -20,6 +22,8 @@ const AppRoutes = () => {
                         <Route path='/produtos' element = {<Produtos />}/>
                         <Route path='/Vendas' element = {<Vendas />}/>
                         <Route path='/Atendimentos' element = {<Atendimentos />}/>
+                        <Route path='/Fornecedor' element = {<Fornecedor />}/>
+                        <Route path='/Profissional' element = {<Profissional />}/>
                     </Routes>
             </Router>
         </>
