@@ -213,10 +213,10 @@ app.get('/BuscarAtendimentos', (request, response) => {
 
  // Profissionais
 
- app.get('/BuscarProfissionais', (request, response) => {
+ app.get('/BuscarProfissional', (request, response) => {
     const criterio = request.query.criterio || '';
     const termo = request.query.termo || ''; 
-    const result = db.BuscarProfissionais(criterio, termo); 
+    const result = db.BuscarProfissional(criterio, termo); 
     result
         .then(data => response.json(data))
         .catch(err => console.log(err))
@@ -237,10 +237,50 @@ app.get('/BuscarAtendimentos', (request, response) => {
         .then(data=> response.json(data))
         .catch(err => console.log(err))
  });
+ app.put('/EditarProfissional', (request, response) => {
+    const result = db.EditarProfissional(request.body);
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
+
+
+
+//Fornecedor
+app.get('/BuscarFornecedor', (request, response) => {
+    const criterio = request.query.criterio || '';
+    const termo = request.query.termo || ''; 
+    const result = db.BuscarFornecedor(criterio, termo); 
+    result
+        .then(data => response.json(data))
+        .catch(err => console.log(err))
+});
 
 
 
 
+
+
+ app.post('/NovoFornecedor', (request, response) => {
+    const result = db.NovoFornecedor(request.body);
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
+
+ app.delete('/DeletarFornecedor/:id', (request, response) => {
+    const id = request.params.id;
+    const result = db.DeletarFornecedor(id);
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
+ app.put('/EditarFornecedor', (request, response) => {
+    const result = db.EditarFornecedor(request.body);
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
 
 
 app.get('/teste', (request, response) => {
