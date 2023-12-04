@@ -158,19 +158,84 @@ class dbServices {
   async NovoProduto(data) {
     try {
       const query =
-        "INSERT INTO tbl_produtos (nome,estoque,preco) VALUES (?,?,?)";
+        "INSERT INTO tbl_produtos (nome,estoque,preco,descricao,marca,fornecedor) VALUES (?,?,?,?,?,?)";
       const nome = data.nome;
       const preco = data.preco;
       const estoque = data.estoque;
+      const descricao = data.descricao;
+      const marca = data.marca;
+      const fornecedor = data.fornecedor;
+      const tipo = data.tipo;
 
       const response = await new Promise((resolve, reject) => {
-        connection.query(query, [nome, preco, estoque], (err, result) => {
+        connection.query(query, [nome, preco, estoque, descricao, marca, fornecedor], (err, result) => {
+          if (err) reject(new Error(err.message));
+          resolve(result);
+        });
+      });
+
+      const lastInsertedId = await new Promise((resolve, reject) => {
+        const queryLastId = "SELECT id FROM tbl_produtos ORDER BY id DESC LIMIT 1";
+        connection.query(queryLastId, (err, result) => {
+          if (err) reject(err);
+          resolve(result[0].id); // Acessa o ID da primeira linha do resultado
+        });
+      });
+
+      const query2 = "INSERT INTO tbl_objeto (id,tipo) VALUES (?,?)";
+
+      const response3 = await new Promise((resolve, reject) => {
+        connection.query(query2, [lastInsertedId, tipo], (err, result) => {
           if (err) reject(new Error(err.message));
           resolve(result);
         });
       });
       console.log("Produto inserido com sucesso");
       return response;
+    } catch (error) {
+      console.log("Erro ao inserir produto :" + error);
+      throw error;
+    }
+  }
+
+  async NovoProduto(data) {
+    try {
+      const query =
+        "INSERT INTO tbl_produtos (nome,estoque,preco,descricao,marca,fornecedor) VALUES (?,?,?,?,?,?)";
+      const nome = data.nome;
+      const preco = data.preco;
+      const estoque = data.estoque;
+      const descricao = data.descricao;
+      const marca = data.marca;
+      const fornecedor = data.fornecedor;
+      const validade = data.validade;
+      const ingredientes = data.ingredientes;
+
+      const response = await new Promise((resolve, reject) => {
+        connection.query(query, [nome, preco, estoque, descricao, marca, fornecedor], (err, result) => {
+          if (err) reject(new Error(err.message));
+          resolve(result);
+        });
+      });
+
+      const lastInsertedId = await new Promise((resolve, reject) => {
+        const queryLastId = "SELECT id FROM tbl_produtos ORDER BY id DESC LIMIT 1";
+        connection.query(queryLastId, (err, result) => {
+          if (err) reject(err);
+          resolve(result[0].id); // Acessa o ID da primeira linha do resultado
+        });
+      });
+
+      const query2 = "INSERT INTO tbl_consumivel (id,validade,ingredientes) VALUES (?,?,?)";
+
+      const response3 = await new Promise((resolve, reject) => {
+        connection.query(query2, [lastInsertedId, validade, ingredientes], (err, result) => {
+          if (err) reject(new Error(err.message));
+          resolve(result);
+        });
+      });
+      console.log("Produto inserido com sucesso");
+      return response3;
     } catch (error) {
       console.log("Erro ao inserir produto :" + error);
       throw error;

@@ -97,6 +97,13 @@ app.get('/BuscarClientes', (request, response) => {
         .catch(err => console.log(err))
  });
 
+ app.post('/NovoProduto2', (request, response) => {
+    const result = db.NovoProduto(request.body);
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
+
  app.delete('/DeletarProduto/:id', (request, response) => {
     const id = request.params.id;
     const result = db.DeletarProduto(id);
