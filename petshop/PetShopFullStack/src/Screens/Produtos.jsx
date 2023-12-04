@@ -13,57 +13,74 @@ import { BsTrash } from "react-icons/bs";
 import Header from "../Components/header.jsx";
 import { AiOutlineEdit } from "react-icons/ai";
 
+
+
 const Produtos = () => {
-  const [criterio, setCriterio] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [nomeProduto, setNomeProduto] = useState('');
+  const [QuantProdutos, setQuantProdutos] = useState(null);
 
   useEffect(() => {
     const getProdutos = async () => {
-      const responseProdutos = await Api.get(
-        `/BuscarProdutos?criterio=${criterio}&termo=${searchTerm}`
-      );
-      setProdutos(responseProdutos.data);
-      setAllProdutos(responseProdutos.data);
+      try {
+        const responseProdutos = await Api.get("/BuscarTodosProdutos");
+        const responseQuantidadeProdutos = await Api.get("/QuantidadeProdutosTabela");
+        console.log(responseQuantidadeProdutos.data[0].total_produtos);
+        const responseProdutosObjeto = await Api.get("/BuscarTodosProdutosObjetos");
+        const responseProdutosConsumivel = await Api.get("/BuscarTodosProdutosConsumiveis");
+        setProdutos(responseProdutos.data);
+        setQuantProdutos(responseQuantidadeProdutos.data[0].total_produtos);
+        setProdutos2(responseProdutosObjeto.data);
+        setProdutos3(responseProdutosConsumivel.data);
+      } catch (error) {
+        console.error("Erro ao obter produtos:", error);
+      }
     };
     getProdutos();
-  }, [criterio, searchTerm]);
+  }, []);
 
-  const [allProdutos, setAllProdutos] = useState([]);
+  const handleInputChange = (event) => {
+    setNomeProduto(event.target.value);
+  };
+
+  const buscarProdutosPorNome = async () => {
+    try {
+      const response = await Api.post("/BuscarProdutosPorNome", { nome: nomeProduto });
+      setProdutos(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar produtos por nome:", error);
+    }
+  };
+
+  const buscarProdutosOrdenada = async () => {
+    try {
+      const response = await Api.post("/BuscarProdutosPorNome", { nome: consultaOrdena });
+      setProdutos(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar produtos por nome:", error);
+    }
+  };
+
+    const [opcaoSelecionada, setOpcaoSelecionada] = useState('produtos');
+    const [valorSelecionado, setValorSelecionado] = useState('');
+  
+    const handleChange = (event) => {
+      setOpcaoSelecionada(event.target.value);
+      setValorSelecionado(event.target.value);
+    };
 
   const [showModal, setShowModal] = useState(false);
 
   const [showModalEdit, setShowModalEdit] = useState(false);
 
   const [produtos, setProdutos] = useState([]);
+  
+  const [produtosObjetos, setProdutos2] = useState([]);
+  const [produtosConsumiveis, setProdutos3] = useState([]);
 
   const [NewProdutoName, setNewProdutoName] = useState("");
   const [NewProdutoPreco, setNewProdutoPreco] = useState("");
   const [NewProdutoEstoque, setNewProdutoEstoque] = useState("");
   const [Editdata, setEditData] = useState([]);
-
-  const handleSearch = (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    setSearchTerm(searchTerm);
-    const filteredProdutos = allProdutos.filter((produto) =>
-      produto.nome.toLowerCase().includes(searchTerm)
-    );
-    setProdutos(filteredProdutos);
-  };
-
-  const handleSort = async (e) => {
-    const selectedCriterio = e.target.value;
-    setCriterio(selectedCriterio);
-
-    try {
-      const responseProdutos = await Api.get(
-        `/BuscarProdutos?criterio=${selectedCriterio}`
-      );
-      setProdutos(responseProdutos.data);
-      setAllProdutos(responseProdutos.data);
-    } catch (error) {
-      console.error("Error sorting products:", error);
-    }
-  };
 
   const handleModal = () => {
     setShowModal(true);
@@ -99,6 +116,7 @@ const Produtos = () => {
     } catch (err) {
       console.log(err);
     }
+    location.reload();
   };
 
   const handleEditProduct = async (id) => {
@@ -115,14 +133,6 @@ const Produtos = () => {
       NewProdutoName == ""
     ) {
       alert("nome nao pode ser nulo!");
-      return;
-    }
-    if (
-      NewProdutoPreco == null ||
-      NewProdutoPreco == undefined ||
-      NewProdutoPreco == ""
-    ) {
-      alert("preco nao pode ser nulo!");
       return;
     }
     const newProduct = {
@@ -156,6 +166,7 @@ const Produtos = () => {
     setNewProdutoName("");
     setNewProdutoPreco("");
     setNewProdutoEstoque("");
+    location.reload();
   };
 
   const handleEdit = async (e) => {
@@ -169,29 +180,26 @@ const Produtos = () => {
       alert("nome nao pode ser nulo!");
       return;
     }
-
-    if (
-      NewProdutoPreco == null ||
-      NewProdutoPreco == undefined ||
-      NewProdutoPreco == ""
-    ) {
-      alert("preco nao pode ser nulo!");
-      return;
-    }
     const EditedProduct = {};
     EditedProduct.id = Editdata.id;
 
-    EditedProduct.nome = NewProdutoName;
+   
+      EditedProduct.nome = NewProdutoName;
+    
 
-    EditedProduct.preco = NewProdutoPreco;
+   
+      EditedProduct.preco = NewProdutoPreco;
+    
 
-    EditedProduct.estoque = NewProdutoEstoque;
+    
+      EditedProduct.estoque = NewProdutoEstoque;
+    
 
     const response = await Api.put(
-      "/EditarProduto",
-      JSON.stringify(EditedProduct),
-      {
-        headers: { "Content-Type": "application/json" },
+     "/EditarProduto",
+     JSON.stringify(EditedProduct),
+     {
+       headers: { "Content-Type": "application/json" },
       }
     );
 
@@ -216,56 +224,36 @@ const Produtos = () => {
     setNewProdutoEstoque("");
   };
 
+  const handleSubmit = async (e) => {
+    event.preventDefault();
+    if(opcaoSelecionada === "protudos"){
+      return "<h1>Teste</h1>";
+    }
+    //console.log("<h1>Teste</h1>");
+  };
+
+  function formatadata(date){
+    if(date == null)
+      return
+    const dataOriginal = new Date(date);
+      const dia = dataOriginal.getDate();
+      const mes = dataOriginal.getMonth() + 1; // Os meses são indexados a partir de zero, então somamos 1
+      const ano = dataOriginal.getFullYear();
+
+      const dataFormatada = `${dia}/${mes}/${ano}`;
+      return dataFormatada;
+  }
+  
+
+  
   return (
     <Container style={{ marginTop: 20 }}>
       <Header />
-      <h1 style={{ marginTop: "84px" }}>Lista de Produtos</h1>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          marginBottom: "24px",
-          marginTop: "16px",
-        }}
-      >
-        <Button
-          variant="primary"
-          onClick={handleModal}
-          style={{
-            marginRight: "10px",
-            backgroundColor: "#baff29",
-            border: "1px solid rgb(131, 179, 29)",
-            marginTop: "0",
-          }}
-        >
-          Cadastrar Novo Produto
-        </Button>
-        <Form>
-          <Form.Group controlId="formBasicSort" style={{ marginRight: 10 }}>
-            <Form.Control as="select" value={criterio} onChange={handleSort}>
-              <option value="">Sem Ordenação</option>
-              <option value="nome">Nome</option>
-              <option value="preco">Preço</option>
-              <option value="estoque">Estoque</option>
-              {/* Adicione mais opções conforme necessário */}
-            </Form.Control>
-          </Form.Group>
-        </Form>
-        <Form>
-          <Form.Group controlId="formBasicSearch">
-            <Form.Control
-              type="text"
-              placeholder="Pesquisar por nome"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                handleSearch(e);
-              }}
-            />
-          </Form.Group>
-        </Form>
-      </div>
+      <h1>Lista de Produtos</h1>
+
+      <Button variant="primary" onClick={handleModal}>
+        Cadastrar novo produto
+      </Button>
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Cadastro de novo Produto</Modal.Title>
@@ -346,41 +334,70 @@ const Produtos = () => {
         </Modal.Body>
       </Modal>
 
-      <Table striped bordered hover>
+      <br /><br />
+      <input type="text" value={nomeProduto} onChange={handleInputChange} />
+      <button onClick={buscarProdutosPorNome}>Buscar</button>
+      
+
+      <Form onSubmit={handleSubmit}>
+      <Form.Group>
+        <Form.Label></Form.Label>
+        <Form.Control as="select" value={opcaoSelecionada} onChange={handleChange}>
+          <option value="produtos">Produtos</option>
+          <option value="objeto">Objetos</option>
+          <option value="consumivel">Consumíveis</option>
+        </Form.Control>
+      </Form.Group>
+    </Form>
+    <br />
+    {opcaoSelecionada === 'produtos' && <p>total de produtos: {QuantProdutos}</p>}
+      {opcaoSelecionada === 'produtos' && <Table striped bordered hover>
         <thead>
           <tr>
             <th>#</th>
             <th>Nome</th>
-            <th>Preco</th>
+            <th>Preco(R$)</th>
             <th>Estoque</th>
-            <th>Acoes</th>
+            <th>Descrição</th>
+            <th>Marca</th>
+            <th>Fornecedor</th>
+            {opcaoSelecionada != 'consumivel' && <th>Tipo</th>}
+            {opcaoSelecionada != 'objeto' && <th>Validade</th>}
+            {opcaoSelecionada != 'objeto'  && <th>Ingredientes</th>}  
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody>
           {produtos.map((product) => (
-            <tr key={product.id}>
+            <tr key={product.id }>
               <td>{product.id}</td>
               <td>{product.nome}</td>
               <td>{product.preco}</td>
               <td>{product.estoque}</td>
+              <td>{product.descricao}</td>
+              <td>{product.marca}</td>
+              <td>{product.fornecedor}</td>
+              {opcaoSelecionada != 'consumivel' && <td>{product.tipo2}</td>}
+              {opcaoSelecionada != 'objeto' && <td>{formatadata(product.validade2)}</td>}
+              {opcaoSelecionada != 'objeto' && <td>{product.ingredientes2}</td>}
+              
+
               <td>
                 <Button
-                  className="actions-btn"
                   onClick={() => {
                     handleDeleteProduct(product.id);
-                  }}
-                  style={{ marginRight: 10 }}
+                  }} style={{marginRight: 10}}
                 >
                   <BsTrash />
                 </Button>
                 <Button
-                  className="actions-btn"
                   onClick={() => {
                     setEditData(product),
                       handleEditProduct(product.id),
                       setNewProdutoName(product.nome),
                       setNewProdutoPreco(product.preco),
                       setNewProdutoEstoque(product.estoque);
+                      
                   }}
                 >
                   <AiOutlineEdit />
@@ -388,17 +405,128 @@ const Produtos = () => {
               </td>
             </tr>
           ))}
-          {produtos.length === 0 && (
-            <tr>
-              <td colSpan="5" style={{ textAlign: "center" }}>
-                Nenhum produto encontrado.
+        </tbody>
+      </Table>}
+
+      {opcaoSelecionada === 'objeto' && <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Preco(R$)</th>
+            <th>Estoque</th>
+            <th>Descrição</th>
+            <th>Marca</th>
+            <th>Fornecedor</th>
+            {opcaoSelecionada != 'consumivel' && <th>Tipo</th>}
+            {opcaoSelecionada != 'objeto' && <th>Validade</th>}
+            {opcaoSelecionada != 'objeto'  && <th>Ingredientes</th>}  
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {produtosObjetos.map((product) => (
+            <tr key={product.id }>
+              <td>{product.id}</td>
+              <td>{product.nome}</td>
+              <td>{product.preco}</td>
+              <td>{product.estoque}</td>
+              <td>{product.descricao}</td>
+              <td>{product.marca}</td>
+              <td>{product.fornecedor}</td>
+              {opcaoSelecionada != 'consumivel' && <td>{product.tipo2}</td>}
+              {opcaoSelecionada != 'objeto' && <td>{formatadata(product.validade2)}</td>}
+              {opcaoSelecionada != 'objeto' && <td>{product.ingredientes2}</td>}
+              
+
+              <td>
+                <Button
+                  onClick={() => {
+                    handleDeleteProduct(product.id);
+                  }} style={{marginRight: 10}}
+                >
+                  <BsTrash />
+                </Button>
+                <Button
+                  onClick={() => {
+                    setEditData(product),
+                      handleEditProduct(product.id),
+                      setNewProdutoName(product.nome),
+                      setNewProdutoPreco(product.preco),
+                      setNewProdutoEstoque(product.estoque);
+                      
+                  }}
+                >
+                  <AiOutlineEdit />
+                </Button>
               </td>
             </tr>
-          )}
+          ))}
         </tbody>
-      </Table>
+      </Table>}
+
+      {opcaoSelecionada === 'consumivel' && <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Preco(R$)</th>
+            <th>Estoque</th>
+            <th>Descrição</th>
+            <th>Marca</th>
+            <th>Fornecedor</th>
+            {opcaoSelecionada != 'consumivel' && <th>Tipo</th>}
+            {opcaoSelecionada != 'objeto' && <th>Validade</th>}
+            {opcaoSelecionada != 'objeto'  && <th>Ingredientes</th>}  
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {produtosConsumiveis.map((product) => (
+            <tr key={product.id }>
+              <td>{product.id}</td>
+              <td>{product.nome}</td>
+              <td>{product.preco}</td>
+              <td>{product.estoque}</td>
+              <td>{product.descricao}</td>
+              <td>{product.marca}</td>
+              <td>{product.fornecedor}</td>
+              {opcaoSelecionada != 'consumivel' && <td>{product.tipo2}</td>}
+              {opcaoSelecionada != 'objeto' && <td>{formatadata(product.validade2)}</td>}
+              {opcaoSelecionada != 'objeto' && <td>{product.ingredientes2}</td>}
+              
+
+              <td>
+                <Button
+                  onClick={() => {
+                    handleDeleteProduct(product.id);
+                  }} style={{marginRight: 10}}
+                >
+                  <BsTrash />
+                </Button>
+                <Button
+                  onClick={() => {
+                    setEditData(product),
+                      handleEditProduct(product.id),
+                      setNewProdutoName(product.nome),
+                      setNewProdutoPreco(product.preco),
+                      setNewProdutoEstoque(product.estoque);
+                      
+                  }}
+                >
+                  <AiOutlineEdit />
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>}
+
+
+      
     </Container>
   );
 };
+
 
 export default Produtos;
