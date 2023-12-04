@@ -80,6 +80,12 @@ const Produtos = () => {
   const [NewProdutoName, setNewProdutoName] = useState("");
   const [NewProdutoPreco, setNewProdutoPreco] = useState("");
   const [NewProdutoEstoque, setNewProdutoEstoque] = useState("");
+  const [NewProdutoDescricao, setNewProdutoDescricao] = useState("");
+  const [NewProdutoMarca, setNewProdutoMarca] = useState("");
+  const [NewProdutoFornecedor, setNewProdutoFornecedor] = useState("");
+  const [NewProdutoTipo, setNewProdutoTipo] = useState("");
+  const [NewProdutoValidade, setNewProdutoValidade] = useState("");
+  const [NewProdutoIngredientes, setNewProdutoIngredientes] = useState("");
   const [Editdata, setEditData] = useState([]);
 
   const handleModal = () => {
@@ -139,6 +145,10 @@ const Produtos = () => {
       nome: NewProdutoName,
       preco: NewProdutoPreco,
       estoque: NewProdutoEstoque,
+      descricao: NewProdutoDescricao,
+      marca: NewProdutoMarca,
+      fornecedor: NewProdutoFornecedor,
+      tipo: NewProdutoTipo,
     };
 
     const response = await Api.post(
@@ -158,6 +168,66 @@ const Produtos = () => {
         nome: NewProdutoName,
         preco: NewProdutoPreco,
         estoque: NewProdutoEstoque,
+        descricao: NewProdutoDescricao,
+        marca: NewProdutoMarca,
+        fornecedor: NewProdutoFornecedor,
+        tipo: NewProdutoTipo,
+      },
+    ]);
+
+    handleClose();
+
+    setNewProdutoName("");
+    setNewProdutoPreco("");
+    setNewProdutoEstoque("");
+    location.reload();
+  };
+
+  const handleSave2 = async (e) => {
+    e.preventDefault();
+
+    if (
+      NewProdutoName == null ||
+      NewProdutoName == undefined ||
+      NewProdutoName == ""
+    ) {
+      alert("nome nao pode ser nulo!");
+      return;
+    }
+    const newProduct = {
+      nome: NewProdutoName,
+      preco: NewProdutoPreco,
+      estoque: NewProdutoEstoque,
+      descricao: NewProdutoDescricao,
+      marca: NewProdutoMarca,
+      fornecedor: NewProdutoFornecedor,
+      validade: NewProdutoValidade,
+      ingredientes: NewProdutoIngredientes,
+    };
+    console.log(NewProdutoValidade);
+
+    const response = await Api.post(
+      "/NovoProduto2",
+      JSON.stringify(newProduct),
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    console.log(response.data.insertId);
+
+    setProdutos([
+      ...produtos,
+      {
+        id: response.data.insertId,
+        nome: NewProdutoName,
+        preco: NewProdutoPreco,
+        estoque: NewProdutoEstoque,
+        descricao: NewProdutoDescricao,
+        marca: NewProdutoMarca,
+        fornecedor: NewProdutoFornecedor,
+        validade: NewProdutoValidade,
+        ingredientes: NewProdutoIngredientes,
       },
     ]);
 
@@ -252,7 +322,7 @@ const Produtos = () => {
       <h1>Lista de Produtos</h1>
 
       <Button variant="primary" onClick={handleModal}>
-        Cadastrar novo produto
+        Cadastrar novo produto Objeto
       </Button>
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
@@ -284,6 +354,130 @@ const Produtos = () => {
                 type="number"
                 placeholder="Digite o Estoque inical do Produto"
                 onChange={(e) => setNewProdutoEstoque(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicDescricao">
+              <Form.Label>Descrição</Form.Label>
+              <Form.Control
+                type="Text"
+                placeholder="Digite a Descrição do Produto"
+                onChange={(e) => setNewProdutoDescricao(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicMarca">
+              <Form.Label>Marca</Form.Label>
+              <Form.Control
+                type="Text"
+                placeholder="Digite a Marca do Produto"
+                onChange={(e) => setNewProdutoMarca(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicFornecedor">
+              <Form.Label>Fornecedor</Form.Label>
+              <Form.Control
+                type="Text"
+                placeholder="Digite o Fronecedor do Produto"
+                onChange={(e) => setNewProdutoFornecedor(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicTipo">
+              <Form.Label>Tipo</Form.Label>
+              <Form.Control
+                type="Text"
+                placeholder="Digite o Tipo do Produto"
+                onChange={(e) => setNewProdutoTipo(e.target.value)}
+              />
+            </Form.Group>
+
+            <Button variant="primary" type="submit">
+              Salvar
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
+      <Button variant="primary" onClick={handleModal}>
+        Cadastrar novo produto Consumivel
+      </Button>
+      <Modal show={showModal} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Cadastro de novo Produto</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSave2}>
+            <Form.Group controlId="formBasicName">
+              <Form.Label>Nome</Form.Label>
+              <Form.Control
+                type="Text"
+                placeholder="Digite o Nome do Produto"
+                onChange={(e) => setNewProdutoName(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicPreco">
+              <Form.Label>Preco</Form.Label>
+              <Form.Control
+                type="Text"
+                placeholder="Digite o Preco do Produto!"
+                onChange={(e) => setNewProdutoPreco(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicEstoque">
+              <Form.Label>Estoque</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Digite o Estoque inical do Produto"
+                onChange={(e) => setNewProdutoEstoque(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicDescricao">
+              <Form.Label>Descrição</Form.Label>
+              <Form.Control
+                type="Text"
+                placeholder="Digite a Descrição do Produto"
+                onChange={(e) => setNewProdutoDescricao(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicMarca">
+              <Form.Label>Marca</Form.Label>
+              <Form.Control
+                type="Text"
+                placeholder="Digite a Marca do Produto"
+                onChange={(e) => setNewProdutoMarca(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicFornecedor">
+              <Form.Label>Fornecedor</Form.Label>
+              <Form.Control
+                type="Text"
+                placeholder="Digite o Fronecedor do Produto"
+                onChange={(e) => setNewProdutoFornecedor(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicValidade">
+              <Form.Label>Valdiade</Form.Label>
+              <Form.Control
+                type="date"
+                placeholder="Digite a Validade do Produto"
+                onChange={(e) => setNewProdutoValidade(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicIngredientes">
+              <Form.Label>Ingredientes</Form.Label>
+              <Form.Control
+                type="Text"
+                placeholder="Digite os Ingredientes do Produto"
+                onChange={(e) => setNewProdutoIngredientes(e.target.value)}
               />
             </Form.Group>
 
