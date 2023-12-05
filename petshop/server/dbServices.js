@@ -1070,7 +1070,7 @@ async QuantidadeProdutosTabela() {
 async NovoProduto(data) {
   try {
     const query =
-      "INSERT INTO tbl_produtos (nome,estoque,preco,descricao,marca,id_fornecedor) VALUES (?,?,?,?,?,?)";
+      "INSERT INTO tbl_produtos (nome,preco,estoque,descricao,marca,id_fornecedor) VALUES (?,?,?,?,?,?)";
     const nome = data.nome;
     const preco = data.preco;
     const estoque = data.estoque;
@@ -1113,7 +1113,7 @@ async NovoProduto(data) {
 async NovoProduto2(data) {
   try {
     const query =
-      "INSERT INTO tbl_produtos (nome,estoque,preco,descricao,marca,id_fornecedor) VALUES (?,?,?,?,?,?)";
+      "INSERT INTO tbl_produtos (nome,preco,estoque,descricao,marca,id_fornecedor) VALUES (?,?,?,?,?,?)";
     const nome = data.nome;
     const preco = data.preco;
     const estoque = data.estoque;
