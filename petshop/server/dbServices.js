@@ -41,6 +41,45 @@ class dbServices {
     });
   }
 
+  async BuscarProdutos(criterio, termo) {
+    let query = "SELECT * FROM tbl_produtos";
+
+    if (termo) {
+      query += ` WHERE nome LIKE '%${termo}%'`;
+    }
+
+    if (criterio) {
+      switch (criterio) {
+        case "nome":
+          query += " ORDER BY nome";
+          break;
+        case "preco":
+          query += " ORDER BY preco";
+          break;
+        case "estoque":
+          query += " ORDER BY estoque";
+          break;
+        // Adicione mais casos conforme necessário
+        default:
+          break;
+      }
+    }
+
+    return new Promise((resolve, reject) => {
+      connection.query(query, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+
+
+
+
   async BuscarProdutosPorNome(nome) {
     return new Promise((resolve, reject) => {
       const query = `SELECT p.*, o.tipo AS tipo2, c.validade AS validade2, c.ingredientes AS ingredientes2 
@@ -482,36 +521,55 @@ class dbServices {
   }
 
   async DeletarVenda(id) {
-    const query = `DELETE FROM tbl_vendas WHERE id = ?;`;
+    const checkIfExistsQuery = `
+      SELECT 1
+      FROM tbl_vendas
+      WHERE id = ?
+        AND EXISTS (
+          SELECT 1 FROM tbl_clientes WHERE id = tbl_vendas.id_cliente
+        )
+        AND EXISTS (
+          SELECT 1 FROM tbl_produtos WHERE id = tbl_vendas.id_produto
+        )
+        AND EXISTS (
+          SELECT 1 FROM tbl_servicos WHERE id = tbl_vendas.id_servico
+        );
+    `;
+  
+    const deleteVendaQuery = `DELETE FROM tbl_vendas WHERE id = ?;`;
+  
     try {
-      const response = await new Promise((resolve, reject) => {
-        connection.query(query, id, (err, result) => {
+      // Verificar se a venda existe e se está associada a clientes, produtos e serviços
+      const existsResponse = await new Promise((resolve, reject) => {
+        connection.query(checkIfExistsQuery, id, (err, result) => {
           if (err) reject(new Error(err.message));
           resolve(result);
         });
       });
-
-      if (response.affectedRows == 0) {
-        throw new Error("Venda nao encontrada");
+  
+      if (existsResponse.length === 0) {
+        throw new Error("Não é possível excluir a venda, pois não foi encontrada ou está associada a clientes, produtos ou serviços inexistentes.");
       }
+  
+      // Se existir, proceda com a exclusão da venda
+      const deleteResponse = await new Promise((resolve, reject) => {
+        connection.query(deleteVendaQuery, id, (err, result) => {
+          if (err) reject(new Error(err.message));
+          resolve(result);
+        });
+      });
+  
+      if (deleteResponse.affectedRows === 0) {
+        throw new Error("Venda não encontrada");
+      }
+  
       console.log("Venda foi deletada com sucesso");
     } catch (err) {
       console.log(err);
       throw err;
     }
   }
-
-  queryAsync(query) {
-    return new Promise((resolve, reject) => {
-      connection.query(query, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  }
+  
 
   
 

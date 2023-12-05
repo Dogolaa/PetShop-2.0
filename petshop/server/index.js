@@ -37,6 +37,14 @@ app.get('/BuscarClientes', (request, response) => {
         .catch(err => console.log(err))
  });
 
+ app.get('/BuscarProdutos', (request, response) => {
+    const criterio = request.query.criterio || '';
+    const termo = request.query.termo || ''; 
+    const result = db.BuscarProdutos(criterio, termo); 
+    result
+        .then(data => response.json(data))
+        .catch(err => console.log(err))
+});
 
 
  app.post('/BuscarProdutosPorNome', (request, response) => {
