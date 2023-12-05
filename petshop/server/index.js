@@ -115,7 +115,7 @@ app.get('/', (request, response) => {
  });
 
  app.post('/NovoProduto2', (request, response) => {
-    const result = db.NovoProduto(request.body);
+    const result = db.NovoProduto2(request.body);
     result
         .then(data=> response.json(data))
         .catch(err => console.log(err))
