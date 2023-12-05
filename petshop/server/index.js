@@ -46,9 +46,6 @@ app.get('/', (request, response) => {
  });
 
 
-
-
-
  app.get('/BuscarProdutos', (request, response) => {
     const criterio = request.query.criterio || '';
     const termo = request.query.termo || ''; 
@@ -59,8 +56,56 @@ app.get('/', (request, response) => {
 });
 
 
+ app.post('/BuscarProdutosPorNome', (request, response) => {
+    const { nome } = request.body; // Assumindo que o nome do produto será enviado no corpo da requisição
+  
+    const result = db.BuscarProdutosPorNome(nome); // Passando o nome para a função BuscarProdutosPorNome
+    result
+      .then(data => response.json(data))
+      .catch(err => {
+        console.error(err);
+        response.status(500).json({ error: 'Erro ao buscar produtos por nome' });
+      });
+  });  
+
+ app.get('/BuscarTodosProdutos', (request, response) => {
+    const result = db.BuscarTodosProdutos();
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
+
+ app.get('/BuscarTodosProdutosObjetos', (request, response) => {
+    const result = db.BuscarTodosProdutosObjetos();
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
+
+ app.get('/BuscarTodosProdutosConsumiveis', (request, response) => {
+    const result = db.BuscarTodosProdutosConsumiveis();
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
+
+ app.get('/QuantidadeProdutosTabela', (request, response) => {
+    const result = db.QuantidadeProdutosTabela();
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
 
 
+
+
+
+ app.get('/BuscarProdutos', (request, response) => {
+    const result = db.BuscarProdutos();
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
 
  app.post('/NovoProduto', (request, response) => {
     const result = db.NovoProduto(request.body);
@@ -68,6 +113,16 @@ app.get('/', (request, response) => {
         .then(data=> response.json(data))
         .catch(err => console.log(err))
  });
+
+ app.post('/NovoProduto2', (request, response) => {
+    const result = db.NovoProduto(request.body);
+    result
+        .then(data=> response.json(data))
+        .catch(err => console.log(err))
+ });
+
+
+ 
 
  app.delete('/DeletarProduto/:id', (request, response) => {
     const id = request.params.id;

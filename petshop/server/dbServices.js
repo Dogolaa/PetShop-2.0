@@ -145,27 +145,7 @@ class dbServices {
     });
   }
 
-  async NovoProduto(data) {
-    try {
-      const query =
-        "INSERT INTO tbl_produtos (nome,preco,estoque) VALUES (?,?,?)";
-      const nome = data.nome;
-      const preco = data.preco;
-      const estoque = data.estoque;
 
-      const response = await new Promise((resolve, reject) => {
-        connection.query(query, [nome, preco, estoque], (err, result) => {
-          if (err) reject(new Error(err.message));
-          resolve(result);
-        });
-      });
-      console.log("Produto inserido com sucesso");
-      return response;
-    } catch (error) {
-      console.log("Erro ao inserir produto :" + error);
-      throw error;
-    }
-  }
 
   async DeletarProduto(id) {
     const query = `DELETE FROM tbl_produtos WHERE id = ?;`;
@@ -964,6 +944,170 @@ async EditarFornecedor(data) {
     throw err;
   }
 }
+
+
+async BuscarProdutosPorNome(nome) {
+  return new Promise((resolve, reject) => {
+    const query = `SELECT p.*, o.tipo AS tipo2, c.validade AS validade2, c.ingredientes AS ingredientes2 
+                   FROM tbl_produtos p 
+                   LEFT JOIN tbl_objeto o ON p.id = o.id 
+                   LEFT JOIN tbl_consumivel c ON p.id = c.id 
+                   WHERE p.nome LIKE '%${nome}%'`; // Usando o parâmetro nome na cláusula WHERE
+    connection.query(query, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}  
+
+async BuscarTodosProdutos() {
+  return new Promise((resolve, reject) => {
+    const query = "SELECT p.*, o.tipo AS tipo2, c.validade AS validade2, c.ingredientes AS ingredientes2 FROM tbl_produtos p LEFT JOIN tbl_objeto o ON p.id = o.id LEFT JOIN tbl_consumivel c ON p.id = c.id;";
+    connection.query(query, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+async BuscarTodosProdutosObjetos() {
+  return new Promise((resolve, reject) => {
+    const query = "SELECT p.*, o.tipo AS tipo2 FROM tbl_produtos p RIGHT JOIN tbl_objeto o ON p.id = o.id;";
+    connection.query(query, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+async BuscarTodosProdutosConsumiveis() {
+  return new Promise((resolve, reject) => {
+    const query = "SELECT p.*, c.validade AS validade2, c.ingredientes AS ingredientes2 FROM tbl_produtos p RIGHT JOIN tbl_consumivel c ON p.id = c.id;";
+    connection.query(query, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+async QuantidadeProdutosTabela() {
+  return new Promise((resolve, reject) => {
+    const query = `SELECT COUNT(*) AS total_produtos 
+                   FROM (SELECT p.*, o.tipo AS tipo2, c.validade AS validade2, c.ingredientes AS ingredientes2 
+                   FROM tbl_produtos p LEFT JOIN tbl_objeto o ON p.id = o.id LEFT JOIN tbl_consumivel c ON p.id = c.id ) 
+                   AS subconsulta;`;
+    connection.query(query, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+} 
+
+async NovoProduto(data) {
+  try {
+    const query =
+      "INSERT INTO tbl_produtos (nome,estoque,preco,descricao,marca,fornecedor) VALUES (?,?,?,?,?,?)";
+    const nome = data.nome;
+    const preco = data.preco;
+    const estoque = data.estoque;
+    const descricao = data.descricao;
+    const marca = data.marca;
+    const fornecedor = data.fornecedor;
+    const tipo = data.tipo;
+
+    const response = await new Promise((resolve, reject) => {
+      connection.query(query, [nome, preco, estoque, descricao, marca, fornecedor], (err, result) => {
+        if (err) reject(new Error(err.message));
+        resolve(result);
+      });
+    });
+
+    const lastInsertedId = await new Promise((resolve, reject) => {
+      const queryLastId = "SELECT id FROM tbl_produtos ORDER BY id DESC LIMIT 1";
+      connection.query(queryLastId, (err, result) => {
+        if (err) reject(err);
+        resolve(result[0].id); // Acessa o ID da primeira linha do resultado
+      });
+    });
+
+    const query2 = "INSERT INTO tbl_objeto (id,tipo) VALUES (?,?)";
+
+    const response3 = await new Promise((resolve, reject) => {
+      connection.query(query2, [lastInsertedId, tipo], (err, result) => {
+        if (err) reject(new Error(err.message));
+        resolve(result);
+      });
+    });
+    console.log("Produto inserido com sucesso");
+    return response;
+  } catch (error) {
+    console.log("Erro ao inserir produto :" + error);
+    throw error;
+  }
+}
+
+async NovoProduto2(data) {
+  try {
+    const query =
+      "INSERT INTO tbl_produtos (nome,estoque,preco,descricao,marca,fornecedor) VALUES (?,?,?,?,?,?)";
+    const nome = data.nome;
+    const preco = data.preco;
+    const estoque = data.estoque;
+    const descricao = data.descricao;
+    const marca = data.marca;
+    const fornecedor = data.fornecedor;
+    const validade = data.validade;
+    const ingredientes = data.ingredientes;
+
+    const response = await new Promise((resolve, reject) => {
+      connection.query(query, [nome, preco, estoque, descricao, marca, fornecedor], (err, result) => {
+        if (err) reject(new Error(err.message));
+        resolve(result);
+      });
+    });
+
+    const lastInsertedId = await new Promise((resolve, reject) => {
+      const queryLastId = "SELECT id FROM tbl_produtos ORDER BY id DESC LIMIT 1";
+      connection.query(queryLastId, (err, result) => {
+        if (err) reject(err);
+        resolve(result[0].id); // Acessa o ID da primeira linha do resultado
+      });
+    });
+
+    const query2 = "INSERT INTO tbl_consumivel (id,validade,ingredientes) VALUES (?,?,?)";
+
+    const response3 = await new Promise((resolve, reject) => {
+      connection.query(query2, [lastInsertedId, validade, ingredientes], (err, result) => {
+        if (err) reject(new Error(err.message));
+        resolve(result);
+      });
+    });
+    console.log("Produto inserido com sucesso");
+    return response3;
+  } catch (error) {
+    console.log("Erro ao inserir produto :" + error);
+    throw error;
+  }
+}
+
+
+
+
 
 }
 
