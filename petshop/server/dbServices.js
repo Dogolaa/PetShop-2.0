@@ -110,6 +110,55 @@ class dbServices {
     }
   }
 
+
+// async DeletarCliente(id) {
+//   const checkIfExistsQuery = `
+//     SELECT 1
+//     FROM tbl_vendas
+//     WHERE EXISTS (
+//       SELECT 1
+//       FROM tbl_clientes
+//       WHERE id = ? AND tbl_vendas.id_cliente = tbl_clientes.id
+//     )
+//   `;
+
+//   const deleteClienteQuery = `DELETE FROM tbl_clientes WHERE id = ?;`;
+
+//   try {
+//     // Verificar se o cliente está associado a alguma venda
+//     const existsResponse = await new Promise((resolve, reject) => {
+//       connection.query(checkIfExistsQuery, id, (err, result) => {
+//         if (err) reject(new Error(err.message));
+//         resolve(result);
+//       });
+//     });
+
+//     if (existsResponse.length > 0) {
+//       throw new Error("Não é possível excluir o cliente, pois ele está associado a pelo menos uma venda.");
+//     }
+
+//     // Se o cliente não estiver associado a nenhuma venda, proceda com a exclusão do cliente
+//     const deleteResponse = await new Promise((resolve, reject) => {
+//       connection.query(deleteClienteQuery, id, (err, result) => {
+//         if (err) reject(new Error(err.message));
+//         resolve(result);
+//       });
+//     });
+
+//     if (deleteResponse.affectedRows === 0) {
+//       throw new Error("Cliente não encontrado");
+//     }
+
+//     console.log("Cliente foi deletado com sucesso");
+//   } catch (err) {
+//     console.log(err);
+//     throw err;
+//   }
+// }
+
+
+
+
   async BuscarProdutos(criterio, termo) {
     let query = "SELECT * FROM tbl_produtos";
 
@@ -1021,7 +1070,7 @@ async QuantidadeProdutosTabela() {
 async NovoProduto(data) {
   try {
     const query =
-      "INSERT INTO tbl_produtos (nome,estoque,preco,descricao,marca,fornecedor) VALUES (?,?,?,?,?,?)";
+      "INSERT INTO tbl_produtos (nome,estoque,preco,descricao,marca,id_fornecedor) VALUES (?,?,?,?,?,?)";
     const nome = data.nome;
     const preco = data.preco;
     const estoque = data.estoque;
@@ -1064,7 +1113,7 @@ async NovoProduto(data) {
 async NovoProduto2(data) {
   try {
     const query =
-      "INSERT INTO tbl_produtos (nome,estoque,preco,descricao,marca,fornecedor) VALUES (?,?,?,?,?,?)";
+      "INSERT INTO tbl_produtos (nome,estoque,preco,descricao,marca,id_fornecedor) VALUES (?,?,?,?,?,?)";
     const nome = data.nome;
     const preco = data.preco;
     const estoque = data.estoque;

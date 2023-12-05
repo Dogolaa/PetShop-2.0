@@ -12,13 +12,28 @@ import Api from "../Api.jsx";
 import { BsTrash } from "react-icons/bs";
 import Header from "../Components/header.jsx";
 import { AiOutlineEdit } from "react-icons/ai";
+import Select from "react-select";
 
 const Produtos = () => {
   const [nomeProduto, setNomeProduto] = useState("");
   const [QuantProdutos, setQuantProdutos] = useState(null);
+  const [fornecedor, setFornecedor] = useState([]);
+  const [fornecedorSelecionado, setFornecedorSelecionado] = useState({});
+
 
   useEffect(() => {
     const getProdutos = async () => {
+
+      const responseFornecedor = await Api.get("/buscarFornecedor");
+
+      const fornecedorFormatado = responseFornecedor.data.map((fornecedor) => ({
+        value: fornecedor.id,
+        label: fornecedor.nome,
+      }));
+      setFornecedor(fornecedorFormatado);
+
+
+
       try {
         const responseProdutos = await Api.get("/BuscarTodosProdutos");
         const responseQuantidadeProdutos = await Api.get(
@@ -154,13 +169,29 @@ const Produtos = () => {
       alert("nome nao pode ser nulo!");
       return;
     }
+
+
+
+    console.log("fornecedorSelecionado:", fornecedorSelecionado);
+    console.log("fornecedorSelecionado.value:", fornecedorSelecionado.value);
+
+
+    if (!fornecedorSelecionado || !fornecedorSelecionado.value) {
+      alert("Fornecedor não pode ser nulo!");
+      return;
+    }
+    
+
+
+
+
     const newProduct = {
       nome: NewProdutoName,
       preco: NewProdutoPreco,
       estoque: NewProdutoEstoque,
       descricao: NewProdutoDescricao,
       marca: NewProdutoMarca,
-      fornecedor: NewProdutoFornecedor,
+      fornecedor: fornecedorSelecionado.value,
       tipo: NewProdutoTipo,
     };
 
@@ -183,7 +214,7 @@ const Produtos = () => {
         estoque: NewProdutoEstoque,
         descricao: NewProdutoDescricao,
         marca: NewProdutoMarca,
-        fornecedor: NewProdutoFornecedor,
+        fornecedor: fornecedorSelecionado.value,
         tipo: NewProdutoTipo,
       },
     ]);
@@ -207,13 +238,25 @@ const Produtos = () => {
       alert("nome nao pode ser nulo!");
       return;
     }
+
+    console.log("fornecedorSelecionado:", fornecedorSelecionado);
+    console.log("fornecedorSelecionado.value:", fornecedorSelecionado.value);
+    
+
+    if (!fornecedorSelecionado || !fornecedorSelecionado.value) {
+      alert("Fornecedor não pode ser nulo!");
+      return;
+    }
+
+
+
     const newProduct = {
       nome: NewProdutoName,
       preco: NewProdutoPreco,
       estoque: NewProdutoEstoque,
       descricao: NewProdutoDescricao,
       marca: NewProdutoMarca,
-      fornecedor: NewProdutoFornecedor,
+      fornecedor: fornecedorSelecionado.value ,
       validade: NewProdutoValidade,
       ingredientes: NewProdutoIngredientes,
     };
@@ -238,7 +281,7 @@ const Produtos = () => {
         estoque: NewProdutoEstoque,
         descricao: NewProdutoDescricao,
         marca: NewProdutoMarca,
-        fornecedor: NewProdutoFornecedor,
+        fornecedor: fornecedorSelecionado.value,
         validade: NewProdutoValidade,
         ingredientes: NewProdutoIngredientes,
       },
@@ -383,14 +426,21 @@ const Produtos = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="formBasicFornecedor">
-              <Form.Label>Fornecedor</Form.Label>
-              <Form.Control
-                type="Text"
-                placeholder="Digite o Fronecedor do Produto"
-                onChange={(e) => setNewProdutoFornecedor(e.target.value)}
+
+
+            
+            <Form.Group controlId="formBasicName">
+              <Form.Label>Selecione o Fornecedor</Form.Label>
+              <Select
+                options={fornecedor}
+                onChange={(selected) => setFornecedorSelecionado(selected)}
               />
             </Form.Group>
+
+
+
+
+
 
             <Form.Group controlId="formBasicTipo">
               <Form.Label>Tipo</Form.Label>
@@ -462,12 +512,11 @@ const Produtos = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="formBasicFornecedor">
-              <Form.Label>Fornecedor</Form.Label>
-              <Form.Control
-                type="Text"
-                placeholder="Digite o Fronecedor do Produto"
-                onChange={(e) => setNewProdutoFornecedor(e.target.value)}
+            <Form.Group controlId="formBasicName">
+              <Form.Label>Selecione o Fornecedor</Form.Label>
+              <Select
+                options={fornecedor}
+                onChange={(selected) => setFornecedorSelecionado(selected)}
               />
             </Form.Group>
 
@@ -621,7 +670,13 @@ const Produtos = () => {
                 <td>{product.estoque}</td>
                 <td>{product.descricao}</td>
                 <td>{product.marca}</td>
-                <td>{product.fornecedor}</td>
+                <td>
+                {
+                  fornecedor.find(
+                    (fornecedor) => fornecedor.value === product.id_fornecedor
+                  )?.label
+                }
+              </td>
                 {opcaoSelecionada != "consumivel" && <td>{product.tipo2}</td>}
                 {opcaoSelecionada != "objeto" && (
                   <td>{formatadata(product.validade2)}</td>
@@ -737,7 +792,7 @@ const Produtos = () => {
             </tr>
           </thead>
           <tbody>
-            {produtosConsumiveis.map((product) => (
+            {produtosConsumiveis.map((product,index) => (
               <tr key={product.id}>
                 <td>{product.id}</td>
                 <td>{product.nome}</td>

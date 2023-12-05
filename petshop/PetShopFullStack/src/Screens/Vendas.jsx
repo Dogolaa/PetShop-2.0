@@ -44,7 +44,7 @@ const Vendas = () => {
       const clientesFormatados = responseClientes.data.map((cliente) => ({
         value: cliente.id,
         label: cliente.nome,
-      }));
+      })); 
       setClientes(clientesFormatados);
 
       const datas = responseVendas.data.map((venda) => venda.data);
